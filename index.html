@@ -1,0 +1,184 @@
+# sertifika<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+
+<style>
+  .ss-wrap {
+    width: 100%; max-width: 520px;
+    margin: 0 auto; padding: 3rem 1rem;
+    font-family: 'Jost', sans-serif; font-weight: 300; color: #1c1814;
+  }
+  .ss-brand { text-align: center; margin-bottom: 3rem; }
+  .ss-brand-logo { display: inline-block; width: 48px; height: 48px; margin-bottom: 1rem; }
+  .ss-brand-name {
+    font-family: 'Cormorant Garamond', serif; font-size: 2rem;
+    font-weight: 400; letter-spacing: 0.2em; text-transform: uppercase;
+    color: #1c1814; display: block;
+  }
+  .ss-brand-tagline {
+    font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: #b8955a; margin-top: 0.3rem; display: block;
+  }
+  .ss-card {
+    background: #fff; border: 1px solid rgba(184,149,90,0.25);
+    border-radius: 2px; padding: 2.5rem 2.5rem 3rem; position: relative;
+  }
+  .ss-card::before, .ss-card::after {
+    content: ''; position: absolute; width: 18px; height: 18px;
+    border-color: #b8955a; border-style: solid;
+  }
+  .ss-card::before { top: 10px; left: 10px; border-width: 1px 0 0 1px; }
+  .ss-card::after  { bottom: 10px; right: 10px; border-width: 0 1px 1px 0; }
+  .ss-card-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.5rem;
+    font-weight: 400; font-style: italic; color: #1c1814; margin-bottom: 0.4rem;
+  }
+  .ss-card-sub {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #5a5248; margin-bottom: 2rem; display: block;
+  }
+  .ss-label {
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: #b8955a; display: block; margin-bottom: 0.5rem;
+  }
+  .ss-input {
+    width: 100%; border: none; border-bottom: 1px solid #e8e0d4;
+    background: transparent; padding: 0.6rem 0;
+    font-family: 'Jost', sans-serif; font-size: 1rem;
+    color: #1c1814; outline: none; display: block; margin-bottom: 1.2rem;
+  }
+  .ss-btn {
+    display: block; width: 100%; margin-top: 2rem; padding: 0.9rem 1rem;
+    background: #1c1814; color: #faf8f4; font-family: 'Jost', sans-serif;
+    font-size: 0.72rem; letter-spacing: 0.3em; text-transform: uppercase;
+    border: none; cursor: pointer;
+  }
+  .ss-btn:hover { background: #b8955a; }
+  .ss-result { margin-top: 2rem; }
+  .ss-success { border-left: 3px solid #b8955a; padding: 1.5rem 1.5rem 1.5rem 2rem; background: #fefcf8; }
+  .ss-result-label { font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: #b8955a; margin-bottom: 0.8rem; display: block; }
+  .ss-result-name { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 400; color: #1c1814; margin-bottom: 0.4rem; display: block; }
+  .ss-result-date { font-size: 0.78rem; color: #5a5248; display: block; }
+  .ss-result-badge { display: block; margin-top: 1.2rem; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: #b8955a; }
+  .ss-error { border-left: 3px solid #c0392b; padding: 1rem 1rem 1rem 1.5rem; background: #fff8f8; }
+  .ss-error-text { font-size: 0.82rem; color: #8b2020; line-height: 1.6; display: block; }
+  .ss-divider { width: 40px; height: 1px; background: #b8955a; margin: 2.5rem auto; opacity: 0.4; }
+  .ss-footer { text-align: center; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: #5a5248; opacity: 0.6; }
+</style>
+
+<script type="text/javascript">
+function ssSorgu() {
+  var API = 'https://script.google.com/macros/s/AKfycbzj3xWcSksuzDMzDmp7hbzAXFAGgbzQQI5dSpIPHryifUol24RPLY0H-d5Uvn-PwFbf9w/exec';
+  var input = document.getElementById('ss-certId');
+  var out   = document.getElementById('ss-result');
+  var btn   = document.getElementById('ss-btn');
+  var query = input.value.trim();
+
+  if (!query) {
+    out.innerHTML = '<div class="ss-error"><span class="ss-error-text">Lütfen bir Sertifika ID girin.</span></div>';
+    return;
+  }
+
+  btn.textContent = 'Sorgulanıyor...';
+  btn.disabled = true;
+  out.innerHTML = '';
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', API, true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) {
+      btn.textContent = 'Sorgula';
+      btn.disabled = false;
+      if (xhr.status === 200) {
+        try {
+          var rows = JSON.parse(xhr.responseText);
+          var match = null;
+          for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            var keys = Object.keys(row);
+            for (var j = 0; j < keys.length; j++) {
+              var k = keys[j];
+              if (k === 'İD' || k === 'ID' || k === 'id' || k === 'Id' || k === 'İd') {
+                if (String(row[k]).toLowerCase() === query.toLowerCase()) {
+                  match = row; break;
+                }
+              }
+            }
+            if (match) break;
+          }
+          if (match) {
+            var mkeys = Object.keys(match);
+            var isimKey = '', tarihKey = '';
+            for (var x = 0; x < mkeys.length; x++) {
+              var mk = mkeys[x].toLowerCase();
+              if (mk.indexOf('isim') > -1 || mk.indexOf('name') > -1) isimKey = mkeys[x];
+              if (mk.indexOf('tarih') > -1 || mk.indexOf('date') > -1) tarihKey = mkeys[x];
+            }
+            var ad = match[isimKey] || 'Ad bulunamadı';
+            var tarihStr = match[tarihKey] ? String(match[tarihKey]) : '';
+            var tarihGoster = tarihStr ? ssFormatTarih(tarihStr) : '—';
+            out.innerHTML = '<div class="ss-success">'
+              + '<span class="ss-result-label">✓ Sertifika Doğrulandı</span>'
+              + '<span class="ss-result-name">' + ad + '</span>'
+              + '<span class="ss-result-date">Düzenlenme Tarihi: ' + tarihGoster + '</span>'
+              + '<span class="ss-result-badge">★ Stella Sola Onaylı · ' + query + '</span>'
+              + '</div>';
+          } else {
+            out.innerHTML = '<div class="ss-error"><span class="ss-error-text">"' + query + '" koduna sahip sertifika bulunamadı.</span></div>';
+          }
+        } catch(e) {
+          out.innerHTML = '<div class="ss-error"><span class="ss-error-text">Hata: ' + e.message + '</span></div>';
+        }
+      } else {
+        out.innerHTML = '<div class="ss-error"><span class="ss-error-text">Sunucuya ulaşılamadı (Hata: ' + xhr.status + ')</span></div>';
+      }
+    }
+  };
+  xhr.send();
+}
+
+function ssFormatTarih(s) {
+  try {
+    var d;
+    if (s.indexOf('T') > -1) { d = new Date(s); }
+    else if (s.indexOf('.') > -1) { var p = s.split('.'); d = new Date(p[2]+'-'+p[1]+'-'+p[0]); }
+    else { d = new Date(s); }
+    if (isNaN(d.getTime())) return s;
+    return d.toLocaleDateString('tr-TR', {day:'numeric', month:'long', year:'numeric'});
+  } catch(e) { return s; }
+}
+</script>
+
+<div class="ss-wrap">
+  <div class="ss-brand">
+    <div class="ss-brand-logo">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="8" stroke="#b8955a" stroke-width="1"/>
+        <circle cx="24" cy="24" r="14" stroke="#b8955a" stroke-width="0.5" stroke-dasharray="2 3"/>
+        <line x1="24" y1="2" x2="24" y2="10" stroke="#b8955a" stroke-width="0.8"/>
+        <line x1="24" y1="38" x2="24" y2="46" stroke="#b8955a" stroke-width="0.8"/>
+        <line x1="2" y1="24" x2="10" y2="24" stroke="#b8955a" stroke-width="0.8"/>
+        <line x1="38" y1="24" x2="46" y2="24" stroke="#b8955a" stroke-width="0.8"/>
+        <line x1="7.4" y1="7.4" x2="13.1" y2="13.1" stroke="#b8955a" stroke-width="0.8"/>
+        <line x1="34.9" y1="34.9" x2="40.6" y2="40.6" stroke="#b8955a" stroke-width="0.8"/>
+        <line x1="40.6" y1="7.4" x2="34.9" y2="13.1" stroke="#b8955a" stroke-width="0.8"/>
+        <line x1="13.1" y1="34.9" x2="7.4" y2="40.6" stroke="#b8955a" stroke-width="0.8"/>
+        <circle cx="24" cy="24" r="3" fill="#b8955a"/>
+      </svg>
+    </div>
+    <span class="ss-brand-name">Stella Sola</span>
+    <span class="ss-brand-tagline">Sertifika Doğrulama</span>
+  </div>
+
+  <div class="ss-card">
+    <div class="ss-card-title">Sertifikanızı Doğrulayın</div>
+    <span class="ss-card-sub">Sertifika kimlik kodunuzu girerek geçerliliğini teyit edin</span>
+    <span class="ss-label">Sertifika ID</span>
+    <input type="text" id="ss-certId" class="ss-input" placeholder="örn: sero001" autocomplete="off" />
+    <button type="button" id="ss-btn" class="ss-btn" onclick="ssSorgu()">Sorgula</button>
+    <div class="ss-result" id="ss-result"></div>
+  </div>
+
+  <div class="ss-divider"></div>
+  <div class="ss-footer">© Stella Sola · Tüm hakları saklıdır</div>
+</div>
