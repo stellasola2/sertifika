@@ -6,19 +6,17 @@
   <title>Sertifika Doğrulama · Stella Sola</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=Raleway:wght@200;300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=Raleway:wght@200;300;400;500;600&display=swap" rel="stylesheet" />
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --red:    #c0182a;
-      --red-dk: #8f0f1e;
-      --black:  #0e0e0e;
-      --white:  #ffffff;
-      --off:    #f7f7f7;
-      --gray:   #6b6b6b;
-      --border: rgba(192,24,42,0.2);
+      --black: #0e0e0e;
+      --white: #ffffff;
+      --off:   #f7f7f7;
+      --gray:  #6b6b6b;
+      --light: #e0e0e0;
     }
 
     html, body {
@@ -29,18 +27,13 @@
       font-weight: 300;
     }
 
-    /* background texture */
     body::before {
       content: '';
       position: fixed; inset: 0;
-      background:
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 80px,
-          rgba(255,255,255,0.015) 80px,
-          rgba(255,255,255,0.015) 81px
-        );
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 80px,
+        rgba(255,255,255,0.015) 80px, rgba(255,255,255,0.015) 81px
+      );
       pointer-events: none; z-index: 0;
     }
 
@@ -53,256 +46,180 @@
     }
 
     /* ── Brand ── */
-    .brand {
-      text-align: center;
-      margin-bottom: 3.5rem;
-      animation: fadeDown 0.8s ease both;
-    }
-
-    .brand-emblem {
-      width: 56px; height: 56px;
-      margin: 0 auto 1.2rem;
-      position: relative;
-    }
-
-    .brand-emblem svg { width: 100%; height: 100%; }
-
+    .brand { text-align: center; margin-bottom: 3.5rem; animation: fadeDown 0.8s ease both; }
     .brand-name {
       font-family: 'Playfair Display', serif;
-      font-size: 2.2rem;
-      font-weight: 400;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--white);
-      display: block;
+      font-size: 2.2rem; font-weight: 400;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--white); display: block;
     }
-
-    .brand-line {
-      width: 48px; height: 1px;
-      background: var(--red);
-      margin: 0.8rem auto;
-    }
-
+    .brand-line { width: 48px; height: 1px; background: var(--white); margin: 0.8rem auto; opacity: 0.3; }
     .brand-sub {
-      font-size: 0.62rem;
-      letter-spacing: 0.4em;
-      text-transform: uppercase;
-      color: var(--red);
-      display: block;
+      font-size: 0.72rem; letter-spacing: 0.4em;
+      text-transform: uppercase; color: var(--white);
+      display: block; font-weight: 600; opacity: 0.7;
     }
 
     /* ── Card ── */
     .card {
       width: 100%; max-width: 500px;
-      background: var(--white);
-      color: var(--black);
-      position: relative;
-      animation: fadeUp 0.8s 0.2s ease both;
+      background: var(--white); color: var(--black);
+      position: relative; animation: fadeUp 0.8s 0.2s ease both;
     }
-
-    /* red top bar */
     .card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 4px;
-      background: var(--red);
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 3px; background: var(--white);
     }
-
     .card-inner { padding: 2.8rem 2.8rem 3rem; }
-
     .card-eyebrow {
-      font-size: 0.6rem;
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      color: var(--red);
-      margin-bottom: 0.5rem;
-      display: block;
+      font-size: 0.6rem; letter-spacing: 0.35em;
+      text-transform: uppercase; color: var(--gray);
+      margin-bottom: 0.5rem; display: block;
     }
-
     .card-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
-      font-weight: 400;
-      font-style: italic;
-      color: var(--black);
-      margin-bottom: 0.3rem;
-      line-height: 1.2;
+      font-size: 1.6rem; font-weight: 400; font-style: italic;
+      color: var(--black); margin-bottom: 0.3rem; line-height: 1.2;
     }
-
     .card-desc {
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      color: var(--gray);
-      margin-bottom: 2.2rem;
-      display: block;
+      font-size: 0.72rem; letter-spacing: 0.1em;
+      color: var(--gray); margin-bottom: 2.2rem; display: block;
     }
 
     /* ── Input ── */
-    .field { margin-bottom: 0; }
-
     .field-label {
-      font-size: 0.62rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--gray);
-      display: block;
-      margin-bottom: 0.6rem;
+      font-size: 0.62rem; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--gray);
+      display: block; margin-bottom: 0.6rem;
     }
-
     .field-input {
-      width: 100%;
-      border: none;
-      border-bottom: 1.5px solid #ddd;
-      background: transparent;
-      padding: 0.7rem 0;
-      font-family: 'Raleway', sans-serif;
-      font-size: 1rem;
-      font-weight: 400;
-      color: var(--black);
-      outline: none;
-      transition: border-color 0.3s;
-      letter-spacing: 0.08em;
+      width: 100%; border: none; border-bottom: 1.5px solid var(--light);
+      background: transparent; padding: 0.7rem 0;
+      font-family: 'Raleway', sans-serif; font-size: 1rem;
+      font-weight: 400; color: var(--black); outline: none;
+      transition: border-color 0.3s; letter-spacing: 0.08em;
     }
-
-    .field-input:focus { border-bottom-color: var(--red); }
+    .field-input:focus { border-bottom-color: var(--black); }
     .field-input::placeholder { color: #ccc; font-size: 0.88rem; }
 
     /* ── Button ── */
     .btn {
-      display: block; width: 100%;
-      margin-top: 2rem; padding: 1rem;
-      background: var(--black);
-      color: var(--white);
-      font-family: 'Raleway', sans-serif;
-      font-size: 0.68rem; font-weight: 500;
+      display: block; width: 100%; margin-top: 2rem; padding: 1rem;
+      background: var(--black); color: var(--white);
+      font-family: 'Raleway', sans-serif; font-size: 0.68rem; font-weight: 500;
       letter-spacing: 0.4em; text-transform: uppercase;
-      border: none; cursor: pointer;
-      transition: background 0.3s;
-      position: relative; overflow: hidden;
+      border: none; cursor: pointer; transition: opacity 0.3s;
     }
-
-    .btn::after {
-      content: '';
-      position: absolute; left: 0; bottom: 0;
-      width: 0; height: 3px;
-      background: var(--red);
-      transition: width 0.3s;
-    }
-
-    .btn:hover { background: var(--red-dk); }
-    .btn:hover::after { width: 100%; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
+    .btn:hover { opacity: 0.8; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn-inner { display: flex; align-items: center; justify-content: center; gap: 10px; }
-
     .spinner {
-      display: none;
-      width: 13px; height: 13px;
-      border: 1.5px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
+      display: none; width: 13px; height: 13px;
+      border: 1.5px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.6s linear infinite;
     }
-
     .btn.loading .spinner { display: block; }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── Result ── */
     #ss-result { margin-top: 2rem; }
+    .result-box { animation: fadeUp 0.5s ease both; }
 
-    .result-box { animation: fadeUp 0.4s ease both; }
-
-    /* success */
     .result-success {
       background: var(--off);
-      border-left: 4px solid var(--red);
+      border-left: 3px solid var(--black);
       padding: 1.8rem 2rem;
     }
-
     .result-verified {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 1.4rem;
+      display: flex; align-items: center; gap: 10px; margin-bottom: 1.4rem;
     }
-
-    .verified-icon {
-      width: 28px; height: 28px; flex-shrink: 0;
-    }
-
+    .verified-icon { width: 28px; height: 28px; flex-shrink: 0; }
     .verified-text {
       font-size: 0.6rem; letter-spacing: 0.35em;
-      text-transform: uppercase; color: var(--red);
-      font-weight: 500;
+      text-transform: uppercase; color: var(--black); font-weight: 600;
     }
-
     .result-name {
       font-family: 'Playfair Display', serif;
       font-size: 2rem; font-weight: 700;
       color: var(--black); line-height: 1.1;
       margin-bottom: 0.3rem; display: block;
     }
-
     .result-urun {
-      font-size: 0.78rem; color: var(--red);
+      font-size: 0.78rem; color: var(--gray);
       letter-spacing: 0.1em; text-transform: uppercase;
-      font-weight: 500; display: block;
-      margin-bottom: 1rem;
+      font-weight: 500; display: block; margin-bottom: 1rem;
     }
-
-    .result-divider {
-      width: 32px; height: 1px;
-      background: #ddd; margin-bottom: 1rem;
-    }
-
+    .result-divider { width: 32px; height: 1px; background: var(--light); margin-bottom: 1rem; }
     .result-meta {
       font-size: 0.72rem; color: var(--gray);
-      letter-spacing: 0.08em; display: block;
-      margin-bottom: 0.3rem;
+      letter-spacing: 0.08em; display: block; margin-bottom: 0.3rem;
     }
-
     .result-id {
       font-size: 0.62rem; letter-spacing: 0.2em;
       text-transform: uppercase; color: var(--gray);
       display: flex; align-items: center; gap: 6px;
       margin-top: 1.2rem; padding-top: 1.2rem;
-      border-top: 1px solid #e5e5e5;
+      border-top: 1px solid var(--light);
     }
+    .result-id-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--black); flex-shrink: 0; }
 
-    .result-id-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--red); flex-shrink: 0;
+    /* ── Not ── */
+    .result-note {
+      margin-top: 1.4rem;
+      padding: 1.4rem 1.6rem;
+      background: var(--black);
+      text-align: center;
     }
+    .result-note-line { width: 24px; height: 1px; background: rgba(255,255,255,0.3); margin: 0 auto 0.9rem; }
+    .result-note-line.bottom { margin: 0.9rem auto 0; }
+    .result-note-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.88rem; font-style: italic;
+      color: var(--white); line-height: 1.8;
+    }
+    .result-note-text strong { font-style: normal; font-weight: 700; color: var(--white); }
 
-    /* error */
+    /* ── Instagram Teşvik ── */
+    .share-teaser {
+      margin-top: 1.2rem;
+      padding: 1.2rem 1.6rem;
+      border: 1px solid var(--light);
+      text-align: center;
+    }
+    .share-teaser-text {
+      font-size: 0.75rem; color: var(--gray);
+      line-height: 1.7; letter-spacing: 0.04em; display: block;
+      margin-bottom: 1rem;
+    }
+    .share-teaser-text strong { color: var(--black); font-weight: 600; }
+    .share-dismiss-btn {
+      display: inline-block;
+      padding: 0.55rem 1.4rem;
+      background: var(--black); color: var(--white);
+      font-family: 'Raleway', sans-serif; font-size: 0.6rem;
+      font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase;
+      border: none; cursor: pointer; transition: opacity 0.3s;
+    }
+    .share-dismiss-btn:hover { opacity: 0.7; }
+
+    /* ── Error ── */
     .result-error {
-      background: #fff5f5;
-      border-left: 4px solid #e53e3e;
-      padding: 1.2rem 1.5rem;
+      background: var(--off); border-left: 3px solid var(--gray); padding: 1.2rem 1.5rem;
     }
+    .result-error p { font-size: 0.82rem; color: #555; line-height: 1.6; }
 
-    .result-error p {
-      font-size: 0.82rem; color: #c53030; line-height: 1.6;
-    }
+    /* ── Konfeti ── */
+    #ss-confetti { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
 
     /* ── Footer ── */
     .footer {
-      margin-top: 2.5rem;
-      text-align: center;
-      font-size: 0.6rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.25);
-      animation: fadeUp 0.8s 0.4s ease both;
+      margin-top: 2.5rem; text-align: center;
+      font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: rgba(255,255,255,0.2); animation: fadeUp 0.8s 0.4s ease both;
     }
 
-    /* ── Animations ── */
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(16px);  } to { opacity:1; transform:translateY(0); } }
+    @keyframes spin     { to { transform: rotate(360deg); } }
 
     @media (max-width: 480px) {
       .card-inner { padding: 2rem 1.5rem 2.5rem; }
@@ -311,46 +228,23 @@
   </style>
 </head>
 <body>
-  <div class="page">
+  <canvas id="ss-confetti"></canvas>
 
-    <!-- Brand -->
+  <div class="page">
     <div class="brand">
-      <div class="brand-emblem">
-        <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- outer ring -->
-          <circle cx="28" cy="28" r="26" stroke="#c0182a" stroke-width="0.8" stroke-dasharray="3 4"/>
-          <!-- inner ring -->
-          <circle cx="28" cy="28" r="16" stroke="white" stroke-width="0.6"/>
-          <!-- rays -->
-          <line x1="28" y1="2"  x2="28" y2="10" stroke="#c0182a" stroke-width="1.2"/>
-          <line x1="28" y1="46" x2="28" y2="54" stroke="#c0182a" stroke-width="1.2"/>
-          <line x1="2"  y1="28" x2="10" y2="28" stroke="#c0182a" stroke-width="1.2"/>
-          <line x1="46" y1="28" x2="54" y2="28" stroke="#c0182a" stroke-width="1.2"/>
-          <line x1="8"  y1="8"  x2="14" y2="14" stroke="#c0182a" stroke-width="0.8"/>
-          <line x1="42" y1="42" x2="48" y2="48" stroke="#c0182a" stroke-width="0.8"/>
-          <line x1="48" y1="8"  x2="42" y2="14" stroke="#c0182a" stroke-width="0.8"/>
-          <line x1="14" y1="42" x2="8"  y2="48" stroke="#c0182a" stroke-width="0.8"/>
-          <!-- center -->
-          <circle cx="28" cy="28" r="4" fill="#c0182a"/>
-          <circle cx="28" cy="28" r="2" fill="white"/>
-        </svg>
-      </div>
       <span class="brand-name">Stella Sola</span>
       <div class="brand-line"></div>
       <span class="brand-sub">Sertifika Doğrulama Sistemi</span>
     </div>
 
-    <!-- Card -->
     <div class="card">
       <div class="card-inner">
         <span class="card-eyebrow">Resmi Doğrulama</span>
         <div class="card-title">Sertifikanızı Doğrulayın</div>
         <span class="card-desc">Size verilen sertifika kodunu girerek geçerliliğini teyit edin</span>
 
-        <div class="field">
-          <span class="field-label">Sertifika ID</span>
-          <input type="text" id="ss-certId" class="field-input" placeholder="örn: sero001" autocomplete="off" spellcheck="false" />
-        </div>
+        <span class="field-label">Sertifika ID</span>
+        <input type="text" id="ss-certId" class="field-input" placeholder="örn: sero001" autocomplete="off" spellcheck="false" />
 
         <button type="button" id="ss-btn" class="btn">
           <span class="btn-inner">
@@ -370,6 +264,69 @@
   (function() {
     var API = 'https://script.google.com/macros/s/AKfycbzj3xWcSksuzDMzDmp7hbzAXFAGgbzQQI5dSpIPHryifUol24RPLY0H-d5Uvn-PwFbf9w/exec';
 
+    /* ── Konfeti — sabit durur ── */
+    var confettiActive = false;
+    var parcaciklar = [];
+
+    function patlat() {
+      var canvas = document.getElementById('ss-confetti');
+      var ctx = canvas.getContext('2d');
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+      var renkler = ['#ffffff','#cccccc','#888888','#444444','#0e0e0e'];
+      parcaciklar = [];
+      for (var i = 0; i < 130; i++) {
+        parcaciklar.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          w: Math.random() * 10 + 4,
+          h: Math.random() * 5 + 3,
+          renk: renkler[Math.floor(Math.random() * renkler.length)],
+          hiz: Math.random() * 2.5 + 1.5,
+          salinti: Math.random() * 2 - 1,
+          aci: Math.random() * 360,
+          donme: Math.random() * 4 - 2,
+          son: false
+        });
+      }
+      confettiActive = true;
+      cizDongu(ctx, canvas);
+    }
+
+    function cizDongu(ctx, canvas) {
+      if (!confettiActive) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var hepsiBitti = true;
+      parcaciklar.forEach(function(p) {
+        if (p.son) return;
+        p.y += p.hiz;
+        p.x += p.salinti;
+        p.aci += p.donme;
+        // ekrandan çıkınca yukarıdan tekrar gir — sabit efekt
+        if (p.y > canvas.height + 20) {
+          p.y = -20;
+          p.x = Math.random() * canvas.width;
+        }
+        hepsiBitti = false;
+        ctx.save();
+        ctx.translate(p.x + p.w/2, p.y + p.h/2);
+        ctx.rotate(p.aci * Math.PI / 180);
+        ctx.fillStyle = p.renk;
+        ctx.globalAlpha = 0.75;
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+      });
+      requestAnimationFrame(function() { cizDongu(ctx, canvas); });
+    }
+
+    function konfettiDurdur() {
+      confettiActive = false;
+      var canvas = document.getElementById('ss-confetti');
+      var ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    /* ── Ana Sorgu ── */
     function ssSorgu() {
       var input = document.getElementById('ss-certId');
       var btn   = document.getElementById('ss-btn');
@@ -413,8 +370,8 @@
             }
 
             if (match) {
-              var isim  = match['İsim']  || match['isim']  || match['Ad']   || match['ad']   || '';
-              var urun  = match['Ürün']  || match['ürün']  || match['Urun'] || match['urun'] || '';
+              var isim  = match['İsim']  || match['isim']  || match['Ad']   || '';
+              var urun  = match['Ürün']  || match['ürün']  || match['Urun'] || '';
               var tarih = match['Tarih'] || match['tarih'] || '';
 
               if (tarih) {
@@ -431,7 +388,7 @@
                 '<div class="result-box result-success">'
                 + '<div class="result-verified">'
                 +   '<svg class="verified-icon" viewBox="0 0 28 28" fill="none">'
-                +     '<circle cx="14" cy="14" r="13" fill="#c0182a"/>'
+                +     '<circle cx="14" cy="14" r="13" fill="#0e0e0e"/>'
                 +     '<path d="M7 14.5l4.5 4.5 9.5-10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
                 +   '</svg>'
                 +   '<span class="verified-text">Sertifika Doğrulandı</span>'
@@ -439,9 +396,21 @@
                 + '<span class="result-name">' + isim + '</span>'
                 + (urun ? '<span class="result-urun">' + urun + '</span>' : '')
                 + '<div class="result-divider"></div>'
-                + '<span class="result-meta">Başlangıç Tarihi: ' + (tarih || '—') + '</span>'
+                + '<span class="result-meta">İlişkinin Başlangıç Tarihi: ' + (tarih || '—') + '</span>'
                 + '<div class="result-id"><div class="result-id-dot"></div>Stella Sola Onaylı &nbsp;·&nbsp; ' + query + '</div>'
+                + '<div class="result-note">'
+                +   '<div class="result-note-line"></div>'
+                +   '<p class="result-note-text">✨ Işıltınız bize ilham veriyor <strong>' + isim + '</strong>! Bu güzel birlikteliğin bir parçası olduğumuz için mutluyuz; bağınızın sonsuza dek sürmesi dileğiyle. 🤍</p>'
+                +   '<div class="result-note-line bottom"></div>'
+                + '</div>'
+                + '<div class="share-teaser" id="ss-share-box">'
+                +   '<span class="share-teaser-text">📸 <strong>Sevdiklerinize göstermek ister misiniz?</strong><br>Bu güzel anı Instagram\'da paylaşarak sevdiklerinizi de bu değerli hediyeden haberdar edebilirsiniz.</span>'
+                +   '<button class="share-dismiss-btn" onclick="ssKapat()">Tamam, Anladım</button>'
+                + '</div>'
                 + '</div>';
+
+              patlat();
+
             } else {
               out.innerHTML = '<div class="result-box result-error"><p>"' + query + '" koduna sahip sertifika bulunamadı. Lütfen kodu kontrol edip tekrar deneyin.</p></div>';
             }
@@ -454,6 +423,15 @@
       };
       xhr.send();
     }
+
+    window.ssKapat = function() {
+      var box = document.getElementById('ss-share-box');
+      if (box) {
+        box.style.transition = 'opacity 0.4s';
+        box.style.opacity = '0';
+        setTimeout(function() { box.style.display = 'none'; }, 400);
+      }
+    };
 
     function init() {
       var btn   = document.getElementById('ss-btn');
