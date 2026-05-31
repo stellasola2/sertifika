@@ -45,7 +45,6 @@
       padding: 3rem 1.5rem;
     }
 
-    /* ── Brand ── */
     .brand { text-align: center; margin-bottom: 3.5rem; animation: fadeDown 0.8s ease both; }
     .brand-name {
       font-family: 'Playfair Display', serif;
@@ -60,7 +59,6 @@
       display: block; font-weight: 600; opacity: 0.7;
     }
 
-    /* ── Card ── */
     .card {
       width: 100%; max-width: 500px;
       background: var(--white); color: var(--black);
@@ -86,7 +84,6 @@
       color: var(--gray); margin-bottom: 2.2rem; display: block;
     }
 
-    /* ── Input ── */
     .field-label {
       font-size: 0.62rem; letter-spacing: 0.3em;
       text-transform: uppercase; color: var(--gray);
@@ -102,7 +99,6 @@
     .field-input:focus { border-bottom-color: var(--black); }
     .field-input::placeholder { color: #ccc; font-size: 0.88rem; }
 
-    /* ── Button ── */
     .btn {
       display: block; width: 100%; margin-top: 2rem; padding: 1rem;
       background: var(--black); color: var(--white);
@@ -120,7 +116,6 @@
     }
     .btn.loading .spinner { display: block; }
 
-    /* ── Result ── */
     #ss-result { margin-top: 2rem; }
     .result-box { animation: fadeUp 0.5s ease both; }
 
@@ -162,7 +157,6 @@
     }
     .result-id-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--black); flex-shrink: 0; }
 
-    /* ── Not ── */
     .result-note {
       margin-top: 1.4rem;
       padding: 1.4rem 1.6rem;
@@ -178,7 +172,6 @@
     }
     .result-note-text strong { font-style: normal; font-weight: 700; color: var(--white); }
 
-    /* ── Instagram Teşvik ── */
     .share-teaser {
       margin-top: 1.2rem;
       padding: 1.2rem 1.6rem;
@@ -201,16 +194,13 @@
     }
     .share-dismiss-btn:hover { opacity: 0.7; }
 
-    /* ── Error ── */
     .result-error {
       background: var(--off); border-left: 3px solid var(--gray); padding: 1.2rem 1.5rem;
     }
     .result-error p { font-size: 0.82rem; color: #555; line-height: 1.6; }
 
-    /* ── Konfeti ── */
     #ss-confetti { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
 
-    /* ── Footer ── */
     .footer {
       margin-top: 2.5rem; text-align: center;
       font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
@@ -244,7 +234,7 @@
         <span class="card-desc">Size verilen sertifika kodunu girerek geçerliliğini teyit edin</span>
 
         <span class="field-label">Sertifika ID</span>
-        <input type="text" id="ss-certId" class="field-input" placeholder="örn: sero001" autocomplete="off" spellcheck="false" />
+        <input type="text" id="ss-certId" class="field-input" placeholder="örn: SS-0131-Mea" autocomplete="off" spellcheck="false" />
 
         <button type="button" id="ss-btn" class="btn">
           <span class="btn-inner">
@@ -264,7 +254,6 @@
   (function() {
     var API = 'https://script.google.com/macros/s/AKfycbzj3xWcSksuzDMzDmp7hbzAXFAGgbzQQI5dSpIPHryifUol24RPLY0H-d5Uvn-PwFbf9w/exec';
 
-    /* ── Konfeti — sabit durur ── */
     var confettiActive = false;
     var parcaciklar = [];
 
@@ -296,18 +285,15 @@
     function cizDongu(ctx, canvas) {
       if (!confettiActive) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      var hepsiBitti = true;
       parcaciklar.forEach(function(p) {
         if (p.son) return;
         p.y += p.hiz;
         p.x += p.salinti;
         p.aci += p.donme;
-        // ekrandan çıkınca yukarıdan tekrar gir — sabit efekt
         if (p.y > canvas.height + 20) {
           p.y = -20;
           p.x = Math.random() * canvas.width;
         }
-        hepsiBitti = false;
         ctx.save();
         ctx.translate(p.x + p.w/2, p.y + p.h/2);
         ctx.rotate(p.aci * Math.PI / 180);
@@ -319,18 +305,13 @@
       requestAnimationFrame(function() { cizDongu(ctx, canvas); });
     }
 
-    function konfettiDurdur() {
-      confettiActive = false;
-      var canvas = document.getElementById('ss-confetti');
-      var ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
     /* ── Ana Sorgu ── */
     function ssSorgu() {
       var input = document.getElementById('ss-certId');
       var btn   = document.getElementById('ss-btn');
       var out   = document.getElementById('ss-result');
+
+      // Kullanıcının girdiği kodu temizle (baş/son boşluk, büyük/küçük harf)
       var query = input.value.trim();
 
       if (!query) {
@@ -355,13 +336,17 @@
           try {
             var rows = JSON.parse(xhr.responseText);
             var match = null;
+
             for (var i = 0; i < rows.length; i++) {
               var row = rows[i];
               var keys = Object.keys(row);
               for (var j = 0; j < keys.length; j++) {
                 var k = keys[j];
                 if (k==='İD'||k==='ID'||k==='id'||k==='İd') {
-                  if (String(row[k]).toLowerCase() === query.toLowerCase()) {
+                  // *** DÜZELTME: Sheets'teki değeri de trim() ile temizle ***
+                  var sheetId = String(row[k]).trim().toLowerCase();
+                  var userId  = query.toLowerCase();
+                  if (sheetId === userId) {
                     match = row; break;
                   }
                 }
