@@ -207,6 +207,49 @@
       color: rgba(255,255,255,0.2); animation: fadeUp 0.8s 0.4s ease both;
     }
 
+    /* ── Kutu Kapağı Efekti ── */
+    :root { --logo-w: min(56vw, 620px); }
+
+    .ss-box {
+      position: fixed; inset: 0; z-index: 1200;
+      perspective: 2400px;
+      pointer-events: none;
+    }
+    .ss-box.closed { pointer-events: auto; }
+
+    .ss-door {
+      position: absolute; top: 0; bottom: 0; width: 50%;
+      background-color: var(--white);
+      background-image: url('stella-sola-logo.png');
+      background-repeat: no-repeat;
+      background-size: var(--logo-w) auto;
+      background-position-y: center;
+      transition: transform 0.95s cubic-bezier(.65,0,.35,1);
+      backface-visibility: hidden;
+      box-shadow: 0 0 70px rgba(0,0,0,0.3);
+    }
+    /* logonun tam ortadan bölünmesi: her kapak, tüm ekranı kaplayan
+       tek bir logonun kendi tarafına düşen dilimini gösterir */
+    .ss-door-left {
+      left: 0; transform-origin: left center; transform: rotateY(-118deg);
+      background-position-x: calc((100vw - var(--logo-w)) / 2);
+    }
+    .ss-door-right {
+      right: 0; transform-origin: right center; transform: rotateY(118deg);
+      background-position-x: calc((100vw - var(--logo-w)) / 2 - 50vw);
+    }
+    .ss-box.closed .ss-door-left  { transform: rotateY(0deg); }
+    .ss-box.closed .ss-door-right { transform: rotateY(0deg); }
+
+    .ss-door-caption {
+      position: absolute; bottom: 10%;
+      font-family: 'Raleway', sans-serif; font-size: 0.68rem;
+      font-weight: 600; letter-spacing: 0.35em;
+      text-transform: uppercase; color: var(--black);
+    }
+    .ss-door-left  .ss-door-caption { right: 8%; }
+    .ss-door-right .ss-door-caption { left: 8%; }
+
     @keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
     @keyframes fadeUp   { from { opacity:0; transform:translateY(16px);  } to { opacity:1; transform:translateY(0); } }
     @keyframes spin     { to { transform: rotate(360deg); } }
@@ -214,11 +257,22 @@
     @media (max-width: 480px) {
       .card-inner { padding: 2rem 1.5rem 2.5rem; }
       .result-name { font-size: 1.6rem; }
+      .ss-door-caption { font-size: 0.55rem; bottom: 7%; }
     }
   </style>
 </head>
 <body>
   <canvas id="ss-confetti"></canvas>
+
+  <!-- Kutu kapağı: tüm ekranı kaplar, sorgu sırasında kapanır, sonuç hazır olunca açılır -->
+  <div class="ss-box" id="ss-box">
+    <div class="ss-door ss-door-left">
+      <div class="ss-door-caption">BİR ÖMÜR</div>
+    </div>
+    <div class="ss-door ss-door-right">
+      <div class="ss-door-caption">TEK SÖZ</div>
+    </div>
+  </div>
 
   <div class="page">
     <div class="brand">
@@ -310,8 +364,8 @@
       var input = document.getElementById('ss-certId');
       var btn   = document.getElementById('ss-btn');
       var out   = document.getElementById('ss-result');
+      var box   = document.getElementById('ss-box');
 
-      // Kullanıcının girdiği kodu temizle (baş/son boşluk, büyük/küçük harf)
       var query = input.value.trim();
 
       if (!query) {
@@ -319,18 +373,32 @@
         return;
       }
 
-      btn.classList.add('loading');
       btn.disabled = true;
-      btn.querySelector('.btn-text').textContent = 'Sorgulanıyor…';
       out.innerHTML = '';
+
+      // Kapak kapanıyor — "Sorgulanıyor" yazısı yerine artık bu bekleme göstergesi
+      box.classList.add('closed');
+
+      var animDone   = false;
+      var dataReady  = false;
+      var pendingHtml = '';
+      var shouldConfetti = false;
+
+      function reveal() {
+        if (!(animDone && dataReady)) return;
+        out.innerHTML = pendingHtml;
+        box.classList.remove('closed'); // kapak açılıyor, sonucu gösteriyor
+        btn.disabled = false;
+        if (shouldConfetti) patlat();
+      }
+
+      // Kapanma animasyonu bitmeden kapak açılmasın diye minimum süre
+      setTimeout(function() { animDone = true; reveal(); }, 950);
 
       var xhr = new XMLHttpRequest();
       xhr.open('GET', API, true);
       xhr.onreadystatechange = function() {
         if (xhr.readyState !== 4) return;
-        btn.classList.remove('loading');
-        btn.disabled = false;
-        btn.querySelector('.btn-text').textContent = 'Sorgula';
 
         if (xhr.status === 200) {
           try {
@@ -343,7 +411,6 @@
               for (var j = 0; j < keys.length; j++) {
                 var k = keys[j];
                 if (k==='İD'||k==='ID'||k==='id'||k==='İd') {
-                  // *** DÜZELTME: Sheets'teki değeri de trim() ile temizle ***
                   var sheetId = String(row[k]).trim().toLowerCase();
                   var userId  = query.toLowerCase();
                   if (sheetId === userId) {
@@ -369,7 +436,7 @@
                 } catch(e) {}
               }
 
-              out.innerHTML =
+              pendingHtml =
                 '<div class="result-box result-success">'
                 + '<div class="result-verified">'
                 +   '<svg class="verified-icon" viewBox="0 0 28 28" fill="none">'
@@ -394,17 +461,20 @@
                 + '</div>'
                 + '</div>';
 
-              patlat();
+              shouldConfetti = true;
 
             } else {
-              out.innerHTML = '<div class="result-box result-error"><p>"' + query + '" koduna sahip sertifika bulunamadı. Lütfen kodu kontrol edip tekrar deneyin.</p></div>';
+              pendingHtml = '<div class="result-box result-error"><p>"' + query + '" koduna sahip sertifika bulunamadı. Lütfen kodu kontrol edip tekrar deneyin.</p></div>';
             }
           } catch(e) {
-            out.innerHTML = '<div class="result-box result-error"><p>Hata: ' + e.message + '</p></div>';
+            pendingHtml = '<div class="result-box result-error"><p>Hata: ' + e.message + '</p></div>';
           }
         } else {
-          out.innerHTML = '<div class="result-box result-error"><p>Sunucuya ulaşılamadı. Lütfen tekrar deneyin.</p></div>';
+          pendingHtml = '<div class="result-box result-error"><p>Sunucuya ulaşılamadı. Lütfen tekrar deneyin.</p></div>';
         }
+
+        dataReady = true;
+        reveal();
       };
       xhr.send();
     }
