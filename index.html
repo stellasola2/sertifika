@@ -241,8 +241,6 @@
     }
     .result-error p { font-size: 0.82rem; color: #555; line-height: 1.6; }
 
-    #ss-confetti { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
-
     .footer {
       margin-top: 2.5rem; text-align: center;
       font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
@@ -387,8 +385,6 @@
   </style>
 </head>
 <body>
-  <canvas id="ss-confetti"></canvas>
-
   <!-- Kutu kapağı: tüm ekranı kaplar, sorgu sırasında kapanır, sonuç hazır olunca açılır -->
   <div class="ss-box" id="ss-box">
     <div class="ss-door ss-door-left">
@@ -444,7 +440,12 @@
       <div class="note-step active" data-step="1">
         <div class="note-step-title">Sertifika ID'nizi girin</div>
         <div class="note-field">
+          <span class="field-label">Sertifika ID</span>
           <input type="text" id="ss-note-certId" class="field-input" placeholder="Sertifika ID" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="note-field">
+          <span class="field-label">Telefon Numaranızın Son 4 Hanesi</span>
+          <input type="tel" id="ss-note-phone4" class="field-input" placeholder="Örn. 4821" maxlength="4" inputmode="numeric" autocomplete="off" />
         </div>
         <div class="note-nav">
           <button type="button" class="btn" id="ss-note-next1">İleri</button>
@@ -509,57 +510,6 @@
   (function() {
     var API = 'https://script.google.com/macros/s/AKfycbzFeYbHlCLl57kx9bx6tzdhdb_nVJg1gp8EGr1JcoZ8sG_ZDr5XJQ0RTX44srV4Zpy_DA/exec';
 
-    var confettiActive = false;
-    var parcaciklar = [];
-
-    function patlat() {
-      var canvas = document.getElementById('ss-confetti');
-      var ctx = canvas.getContext('2d');
-      canvas.width  = window.innerWidth;
-      canvas.height = window.innerHeight;
-      var renkler = ['#ffffff','#cccccc','#888888','#444444','#0e0e0e'];
-      parcaciklar = [];
-      for (var i = 0; i < 130; i++) {
-        parcaciklar.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height - canvas.height,
-          w: Math.random() * 10 + 4,
-          h: Math.random() * 5 + 3,
-          renk: renkler[Math.floor(Math.random() * renkler.length)],
-          hiz: Math.random() * 2.5 + 1.5,
-          salinti: Math.random() * 2 - 1,
-          aci: Math.random() * 360,
-          donme: Math.random() * 4 - 2,
-          son: false
-        });
-      }
-      confettiActive = true;
-      cizDongu(ctx, canvas);
-    }
-
-    function cizDongu(ctx, canvas) {
-      if (!confettiActive) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      parcaciklar.forEach(function(p) {
-        if (p.son) return;
-        p.y += p.hiz;
-        p.x += p.salinti;
-        p.aci += p.donme;
-        if (p.y > canvas.height + 20) {
-          p.y = -20;
-          p.x = Math.random() * canvas.width;
-        }
-        ctx.save();
-        ctx.translate(p.x + p.w/2, p.y + p.h/2);
-        ctx.rotate(p.aci * Math.PI / 180);
-        ctx.fillStyle = p.renk;
-        ctx.globalAlpha = 0.75;
-        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-        ctx.restore();
-      });
-      requestAnimationFrame(function() { cizDongu(ctx, canvas); });
-    }
-
     /* ── Ana Sorgu ── */
     function ssSorgu() {
       var input = document.getElementById('ss-certId');
@@ -583,14 +533,12 @@
       var animDone   = false;
       var dataReady  = false;
       var pendingHtml = '';
-      var shouldConfetti = false;
 
       function reveal() {
         if (!(animDone && dataReady)) return;
         out.innerHTML = pendingHtml;
         box.classList.remove('closed'); // kapak açılıyor, sonucu gösteriyor
         btn.disabled = false;
-        if (shouldConfetti) patlat();
 
         var cardBtn = document.getElementById('ss-card-btn');
         if (cardBtn) cardBtn.addEventListener('click', ssKartOlustur);
@@ -627,6 +575,8 @@
 
             if (match) {
               var isim  = match['İsim']  || match['isim']  || match['Ad']   || '';
+              var erkekAdi = match['ErkekAdı'] || match['ErkekAdi'] || match['Erkek Adı'] || match['erkekAdi'] || '';
+              var displayName = erkekAdi ? (erkekAdi + ' & ' + isim) : isim;
               var urun  = match['Ürün']  || match['ürün']  || match['Urun'] || '';
               var tarih = match['Tarih'] || match['tarih'] || '';
               var satinAlmaRaw = match['SatınAlmaTarihi'] || match['Satın Alma Tarihi'] || match['SatinAlmaTarihi'] || match['satinAlmaTarihi'] || '';
@@ -705,7 +655,7 @@
                 +   '</svg>'
                 +   '<span class="verified-text">Sertifika Doğrulandı</span>'
                 + '</div>'
-                + '<span class="result-name">' + isim + '</span>'
+                + '<span class="result-name">' + displayName + '</span>'
                 + (urun ? '<span class="result-urun">' + urun + '</span>' : '')
                 + counterHtml
                 + '<div class="result-divider"></div>'
@@ -724,8 +674,7 @@
                 + '</div>'
                 + '</div>';
 
-              shouldConfetti = true;
-              window.ssLastCert = { isim: isim, urun: urun, gun: gunSayaci, id: query, tarih: tarih };
+              window.ssLastCert = { isim: isim, erkekAdi: erkekAdi, displayName: displayName, urun: urun, gun: gunSayaci, id: query, tarih: tarih };
 
             } else {
               pendingHtml = '<div class="result-box result-error"><p>"' + query + '" koduna sahip sertifika bulunamadı. Lütfen kodu kontrol edip tekrar deneyin.</p></div>';
@@ -783,19 +732,21 @@
     function ssNoteClose() { document.getElementById('ss-note-modal').classList.remove('active'); }
 
     function ssNotKaydet() {
-      var idInput   = document.getElementById('ss-note-certId');
-      var textInput = document.getElementById('ss-note-text');
-      var dateInput = document.getElementById('ss-note-date');
-      var timeInput = document.getElementById('ss-note-time');
-      var status    = document.getElementById('ss-note-status');
-      var saveBtn   = document.getElementById('ss-note-save');
+      var idInput    = document.getElementById('ss-note-certId');
+      var phoneInput = document.getElementById('ss-note-phone4');
+      var textInput  = document.getElementById('ss-note-text');
+      var dateInput  = document.getElementById('ss-note-date');
+      var timeInput  = document.getElementById('ss-note-time');
+      var status     = document.getElementById('ss-note-status');
+      var saveBtn    = document.getElementById('ss-note-save');
 
-      var id     = idInput.value.trim();
-      var mektup = textInput.value.trim();
-      var tarih  = dateInput.value;          // YYYY-MM-DD
-      var saat   = timeInput.value || '00:00';
+      var id      = idInput.value.trim();
+      var phone4  = phoneInput.value.trim();
+      var mektup  = textInput.value.trim();
+      var tarih   = dateInput.value;
+      var saat    = timeInput.value || '00:00';
 
-      if (!id || !mektup) {
+      if (!id || !phone4 || !mektup) {
         status.className = 'note-status err';
         status.textContent = 'Lütfen tüm alanları doldurun.';
         return;
@@ -819,21 +770,25 @@
         if (xhr.readyState !== 4) return;
         saveBtn.disabled = false;
 
-        if (xhr.status === 200) {
+        var resp = null;
+        try { resp = JSON.parse(xhr.responseText); } catch (e) {}
+
+        if (xhr.status === 200 && resp && resp.success) {
           status.className = 'note-status ok';
           status.textContent = 'Mektubunuz kaydedildi.';
           setTimeout(function() {
             ssNoteClose();
-            idInput.value = ''; textInput.value = ''; dateInput.value = ''; timeInput.value = '';
+            idInput.value = ''; phoneInput.value = ''; textInput.value = ''; dateInput.value = ''; timeInput.value = '';
             status.textContent = '';
           }, 1400);
         } else {
           status.className = 'note-status err';
-          status.textContent = 'Kaydedilemedi. Lütfen tekrar deneyin.';
+          status.textContent = (resp && resp.error) ? resp.error : 'Kaydedilemedi. Lütfen tekrar deneyin.';
         }
       };
       xhr.send(
         'action=saveNote&id=' + encodeURIComponent(id) +
+        '&telefon4=' + encodeURIComponent(phone4) +
         '&mektup=' + encodeURIComponent(mektup) +
         '&tarih=' + encodeURIComponent(tarihValue)
       );
@@ -868,10 +823,10 @@
       ctx.closePath();
     }
 
-    function ssDrawDivider(ctx, cx, y, totalWidth) {
+    function ssDrawDivider(ctx, cx, y, totalWidth, color) {
+      color = color || 'rgba(255,255,255,0.18)';
       var d = 7, gap = 16;
-      var lineLen = (totalWidth - d * 2 - gap * 2) / 2;
-      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.strokeStyle = color;
       ctx.lineWidth = 1.2;
       ctx.beginPath();
       ctx.moveTo(cx - totalWidth / 2, y);
@@ -884,7 +839,7 @@
       ctx.save();
       ctx.translate(cx, y);
       ctx.rotate(Math.PI / 4);
-      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.strokeStyle = color;
       ctx.strokeRect(-d / 2, -d / 2, d, d);
       ctx.restore();
     }
@@ -961,7 +916,7 @@
         cy += 100;
         ctx.fillStyle = INK;
         ctx.font = 'italic 700 76px "Playfair Display", serif';
-        ctx.fillText(data.isim || '', W/2, cy);
+        ctx.fillText(data.displayName || data.isim || '', W/2, cy);
 
         if (data.urun) {
           cy += 52;
@@ -975,7 +930,11 @@
         ctx.font = 'italic 400 33px "Playfair Display", serif';
         ctx.fillText('Bir ömür, tek bir kalp.', W/2, cy);
         cy += 46;
-        ctx.fillText('Bu yüzük yalnızca ' + (data.isim || '') + "'a adanmıştır.", W/2, cy);
+        if (data.erkekAdi) {
+          ctx.fillText(data.erkekAdi + ' & ' + (data.isim || '') + "'nin birlikteliğine adanmıştır.", W/2, cy);
+        } else {
+          ctx.fillText('Bu yüzük yalnızca ' + (data.isim || '') + "'a adanmıştır.", W/2, cy);
+        }
 
         cy += 86;
         ssDrawDivider(ctx, W/2, cy, 160, GOLD);
@@ -1086,7 +1045,10 @@
         ['ss-note-close', ssNoteClose],
         ['ss-note-save',  ssNotKaydet],
         ['ss-note-next1', function(){
-          if (!document.getElementById('ss-note-certId').value.trim()) { alert('Lütfen sertifika ID girin.'); return; }
+          var idVal = document.getElementById('ss-note-certId').value.trim();
+          var phoneVal = document.getElementById('ss-note-phone4').value.trim();
+          if (!idVal) { alert('Lütfen sertifika ID girin.'); return; }
+          if (!/^\d{4}$/.test(phoneVal)) { alert('Lütfen telefon numaranızın son 4 hanesini girin.'); return; }
           ssNoteGoStep(2);
         }],
         ['ss-note-back2', function(){ ssNoteGoStep(1); }],
