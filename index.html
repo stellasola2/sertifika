@@ -847,6 +847,41 @@
       ctx.textAlign = prevAlign;
     }
 
+    function ssRoundedRectPath(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.arcTo(x + w, y, x + w, y + r, r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+      ctx.lineTo(x + r, y + h);
+      ctx.arcTo(x, y + h, x, y + h - r, r);
+      ctx.lineTo(x, y + r);
+      ctx.arcTo(x, y, x + r, y, r);
+      ctx.closePath();
+    }
+
+    function ssDrawDivider(ctx, cx, y, totalWidth) {
+      var d = 7, gap = 16;
+      var lineLen = (totalWidth - d * 2 - gap * 2) / 2;
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(cx - totalWidth / 2, y);
+      ctx.lineTo(cx - d - gap, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx + d + gap, y);
+      ctx.lineTo(cx + totalWidth / 2, y);
+      ctx.stroke();
+      ctx.save();
+      ctx.translate(cx, y);
+      ctx.rotate(Math.PI / 4);
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.strokeRect(-d / 2, -d / 2, d, d);
+      ctx.restore();
+    }
+
     function ssBuildCardCanvas(data, callback) {
       var W = 1080, H = 1920;
       var canvas = document.createElement('canvas');
@@ -856,67 +891,87 @@
       ctx.fillStyle = '#0e0e0e';
       ctx.fillRect(0, 0, W, H);
 
-      ctx.strokeStyle = 'rgba(255,255,255,0.035)';
+      var vg = ctx.createRadialGradient(W/2, H*0.42, 80, W/2, H*0.42, W*0.78);
+      vg.addColorStop(0, 'rgba(255,255,255,0.055)');
+      vg.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = vg;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.025)';
       ctx.lineWidth = 1;
       for (var y = 0; y < H; y += 64) {
         ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(W, y + 0.5); ctx.stroke();
       }
 
+      ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+      ctx.lineWidth = 1.4;
+      ssRoundedRectPath(ctx, 56, 56, W - 112, H - 112, 2);
+      ctx.stroke();
+
       var logo = new Image();
       logo.crossOrigin = 'anonymous';
       logo.onload = function() {
-        var lw = 460;
+        var lw = 400;
         var lh = lw * (logo.height / logo.width);
-        var logoTop = 190;
+        var logoTop = 168;
         ctx.filter = 'invert(1)';
+        ctx.globalAlpha = 0.96;
         ctx.drawImage(logo, (W - lw) / 2, logoTop, lw, lh);
+        ctx.globalAlpha = 1;
         ctx.filter = 'none';
 
-        var cy = logoTop + lh + 130;
+        ctx.textAlign = 'center';
+        var cy = logoTop + lh + 70;
+        ssDrawDivider(ctx, W/2, cy, 220);
 
-        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        cy += 66;
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
         ctx.font = '600 24px Raleway, sans-serif';
         ssFillTextSpaced(ctx, 'SERTİFİKA DOĞRULANDI', W/2, cy, 10);
 
-        cy += 90;
-        ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'center';
-        ctx.font = 'italic 700 76px "Playfair Display", serif';
+        cy += 108;
+        ctx.fillStyle = 'rgba(255,255,255,0.97)';
+        ctx.font = 'italic 700 78px "Playfair Display", serif';
         ctx.fillText(data.isim || '', W/2, cy);
 
         if (data.urun) {
-          cy += 56;
-          ctx.fillStyle = 'rgba(255,255,255,0.55)';
-          ctx.font = '500 26px Raleway, sans-serif';
+          cy += 54;
+          ctx.fillStyle = 'rgba(255,255,255,0.5)';
+          ctx.font = '500 25px Raleway, sans-serif';
           ssFillTextSpaced(ctx, String(data.urun).toUpperCase(), W/2, cy, 4);
         }
 
         if (data.gun !== null && data.gun !== undefined) {
+          cy += 110;
+          ssDrawDivider(ctx, W/2, cy, 160);
+
           cy += 150;
-          ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-          ctx.beginPath(); ctx.moveTo(W/2 - 60, cy - 90); ctx.lineTo(W/2 + 60, cy - 90); ctx.stroke();
+          ctx.fillStyle = 'rgba(255,255,255,0.98)';
+          ctx.font = '700 196px "Playfair Display", serif';
+          ctx.fillText(String(data.gun), W/2, cy);
 
-          ctx.fillStyle = '#ffffff';
-          ctx.font = '700 190px "Playfair Display", serif';
-          ctx.fillText(String(data.gun), W/2, cy + 70);
-
-          cy += 130;
-          ctx.fillStyle = 'rgba(255,255,255,0.6)';
-          ctx.font = '600 26px Raleway, sans-serif';
+          cy += 58;
+          ctx.fillStyle = 'rgba(255,255,255,0.55)';
+          ctx.font = '600 25px Raleway, sans-serif';
           ssFillTextSpaced(ctx, 'GÜNDÜR STELLA SOLA İLE BERABERSİNİZ', W/2, cy, 4);
-
-          ctx.beginPath(); ctx.moveTo(W/2 - 60, cy + 60); ctx.lineTo(W/2 + 60, cy + 60); ctx.stroke();
         }
 
-        var footerY = H - 150;
-        ctx.fillStyle = 'rgba(255,255,255,0.4)';
-        ctx.font = '500 24px Raleway, sans-serif';
-        ssFillTextSpaced(ctx, 'SEN DE SERTİFİKANI DOĞRULA', W/2, footerY, 6);
+        var badgeW = 760, badgeH = 150;
+        var badgeX = (W - badgeW) / 2;
+        var badgeY = H - 260;
+        ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+        ctx.lineWidth = 1.2;
+        ssRoundedRectPath(ctx, badgeX, badgeY, badgeW, badgeH, 4);
+        ctx.stroke();
 
-        ctx.fillStyle = 'rgba(255,255,255,0.65)';
+        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        ctx.font = '600 23px Raleway, sans-serif';
+        ssFillTextSpaced(ctx, 'SEN DE SERTİFİKANI DOĞRULA', W/2, badgeY + 58, 6);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
         ctx.font = '400 26px Raleway, sans-serif';
         var siteUrl = location.origin + location.pathname;
-        ctx.fillText(siteUrl, W/2, footerY + 48);
+        ctx.fillText(siteUrl, W/2, badgeY + 102);
 
         if (callback) callback(canvas);
       };
