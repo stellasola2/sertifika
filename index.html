@@ -144,6 +144,26 @@
       font-weight: 500; display: block; margin-bottom: 1rem;
     }
     .result-divider { width: 32px; height: 1px; background: var(--light); margin-bottom: 1rem; }
+
+    .day-counter {
+      margin: 1.2rem 0 1.4rem;
+      text-align: center;
+      padding: 1.3rem 1rem;
+      border-top: 1px solid var(--light);
+      border-bottom: 1px solid var(--light);
+    }
+    .day-counter-num {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem; font-weight: 700;
+      color: var(--black); line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .day-counter-label {
+      display: block;
+      font-size: 0.66rem; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--gray);
+    }
     .result-meta {
       font-size: 0.72rem; color: var(--gray);
       letter-spacing: 0.08em; display: block; margin-bottom: 0.3rem;
@@ -194,6 +214,22 @@
     }
     .share-dismiss-btn:hover { opacity: 0.7; }
 
+    /* ── Paylaşılabilir Kart Önizleme Modalı ── */
+    .card-modal {
+      position: fixed; inset: 0; z-index: 1600;
+      background: rgba(0,0,0,0.7);
+      display: none; align-items: center; justify-content: center;
+      padding: 1.2rem;
+    }
+    .card-modal.active { display: flex; }
+    .card-modal-inner {
+      width: 100%; max-width: 300px; background: var(--white);
+      padding: 1rem 1rem 1.4rem; position: relative;
+      animation: fadeUp 0.35s ease both;
+    }
+    .card-modal-inner img { width: 100%; display: block; margin-bottom: 1rem; }
+    .card-modal-inner .note-nav { flex-wrap: nowrap; }
+
     .result-error {
       background: var(--off); border-left: 3px solid var(--gray); padding: 1.2rem 1.5rem;
     }
@@ -205,6 +241,89 @@
       margin-top: 2.5rem; text-align: center;
       font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
       color: rgba(255,255,255,0.2); animation: fadeUp 0.8s 0.4s ease both;
+    }
+
+    /* ── Mektup Bırakma: tetikleyici + adım adım pencere ── */
+    .note-trigger {
+      display: inline-block; margin-top: 2rem; background: none; border: none;
+      color: rgba(255,255,255,0.55); font-family: 'Raleway', sans-serif; font-size: 0.72rem;
+      letter-spacing: 0.08em; cursor: pointer; text-decoration: underline; text-underline-offset: 4px;
+      transition: color 0.3s;
+    }
+    .note-trigger:hover { color: #fff; }
+
+    .note-modal {
+      position: fixed; inset: 0; z-index: 1500;
+      background: rgba(0,0,0,0.6);
+      display: none; align-items: center; justify-content: center;
+      padding: 1.2rem;
+    }
+    .note-modal.active { display: flex; }
+    .note-modal-card {
+      width: 100%; max-width: 420px; background: var(--white); color: var(--black);
+      padding: 2.6rem 2rem 2.2rem; position: relative; animation: fadeUp 0.35s ease both;
+    }
+    .note-close {
+      position: absolute; top: 14px; right: 16px; background: none; border: none;
+      font-size: 1.1rem; color: var(--gray); cursor: pointer; line-height: 1;
+    }
+    .note-progress { display: flex; gap: 6px; justify-content: center; margin-bottom: 1.8rem; }
+    .note-progress span { width: 6px; height: 6px; border-radius: 50%; background: var(--light); }
+    .note-progress span.active { background: var(--black); }
+
+    .note-step { display: none; }
+    .note-step.active { display: block; }
+    .note-step-title {
+      font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.25rem;
+      margin-bottom: 1.4rem;
+    }
+    .note-nav { display: flex; gap: 0.7rem; margin-top: 0.4rem; flex-wrap: wrap; }
+    .note-nav .btn { margin-top: 0; flex: 1 1 auto; }
+    .note-nav .btn.ghost { background: transparent; color: var(--black); border: 1px solid var(--light); }
+
+    .note-field { margin-bottom: 1.2rem; }
+    .note-textarea {
+      width: 100%; min-height: 110px; resize: vertical;
+      border: 1.5px solid var(--light); background: transparent;
+      padding: 0.8rem; font-family: 'Raleway', sans-serif; font-size: 0.92rem;
+      color: var(--black); outline: none; letter-spacing: 0.02em; line-height: 1.6;
+    }
+    .note-textarea:focus { border-color: var(--black); }
+    .note-hint { font-size: 0.75rem; color: var(--gray); line-height: 1.6; margin-bottom: 1.2rem; }
+    .note-date, .note-time {
+      width: 100%; border: 1.5px solid var(--light); background: transparent;
+      padding: 0.75rem 0.8rem;
+      font-family: 'Raleway', sans-serif; font-size: 0.95rem;
+      color: var(--black); outline: none;
+    }
+    .note-time { margin-top: 0.9rem; }
+    .note-date:focus, .note-time:focus { border-color: var(--black); }
+    .note-status { margin-top: 1rem; font-size: 0.78rem; letter-spacing: 0.04em; }
+    .note-status.ok  { color: #2f6f4f; }
+    .note-status.err { color: #a33; }
+
+    /* ── Sorgu sonucunda görünen mektup (kilitli / açık) ── */
+    .letter-locked {
+      margin-top: 1.4rem; padding: 1.4rem 1.6rem;
+      border: 1px dashed var(--light); text-align: center;
+    }
+    .letter-locked-text {
+      font-size: 0.8rem; color: var(--gray); letter-spacing: 0.04em; line-height: 1.7;
+    }
+    .letter-locked-text strong { color: var(--black); font-weight: 600; }
+
+    .letter-unlocked {
+      margin-top: 1.4rem; padding: 1.6rem 1.8rem;
+      background: var(--black); text-align: left;
+    }
+    .letter-unlocked-eyebrow {
+      font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(255,255,255,0.5); display: block; margin-bottom: 0.8rem;
+    }
+    .letter-unlocked-text {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 0.95rem; color: var(--white); line-height: 1.9;
+      white-space: pre-wrap;
     }
 
     /* ── Kutu Kapağı Efekti ── */
@@ -301,12 +420,87 @@
       </div>
     </div>
 
+    <button type="button" class="note-trigger" id="ss-note-open">💌 Sevdiğinize Bir Mektup Bırakın</button>
+
     <div class="footer">© 2026 Stella Sola · Tüm Hakları Saklıdır</div>
+  </div>
+
+  <div class="note-modal" id="ss-note-modal">
+    <div class="note-modal-card">
+      <button type="button" class="note-close" id="ss-note-close">✕</button>
+
+      <div class="note-progress">
+        <span class="active" data-step="1"></span>
+        <span data-step="2"></span>
+        <span data-step="3"></span>
+      </div>
+
+      <div class="note-step active" data-step="1">
+        <div class="note-step-title">Sertifika ID'nizi girin</div>
+        <div class="note-field">
+          <input type="text" id="ss-note-certId" class="field-input" placeholder="Sertifika ID" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="note-nav">
+          <button type="button" class="btn" id="ss-note-next1">İleri</button>
+        </div>
+      </div>
+
+      <div class="note-step" data-step="2">
+        <div class="note-step-title">Ne yazmak istersiniz?</div>
+        <div class="note-field">
+          <textarea id="ss-note-text" class="note-textarea" placeholder="Ona söylemek istediklerinizi buraya yazın…"></textarea>
+        </div>
+        <div class="note-nav">
+          <button type="button" class="btn ghost" id="ss-note-back2">Geri</button>
+          <button type="button" class="btn" id="ss-note-next2">İleri</button>
+        </div>
+      </div>
+
+      <div class="note-step" data-step="3">
+        <div class="note-step-title">Kilitlemek ister misiniz?</div>
+        <p class="note-hint">Kilitlerseniz mektup yalnızca seçtiğiniz tarih ve saatte görünür. Kilitlemezseniz sertifika doğrulanır doğrulanmaz hemen görünür.</p>
+
+        <div class="note-nav" id="ss-note-lock-choice">
+          <button type="button" class="btn ghost" id="ss-note-back-to-2">‹ Geri</button>
+          <button type="button" class="btn ghost" id="ss-note-lock-no">Hayır, hemen görünsün</button>
+          <button type="button" class="btn" id="ss-note-lock-yes">Evet, tarih seçeyim</button>
+        </div>
+
+        <div id="ss-note-lock-fields" style="display:none;">
+          <div class="note-field">
+            <span class="field-label">Tarih</span>
+            <input type="date" id="ss-note-date" class="note-date" />
+          </div>
+          <div class="note-field">
+            <span class="field-label">Saat</span>
+            <input type="time" id="ss-note-time" class="note-time" />
+          </div>
+        </div>
+
+        <div class="note-nav" id="ss-note-final-nav" style="display:none;">
+          <button type="button" class="btn ghost" id="ss-note-back3">Geri</button>
+          <button type="button" class="btn" id="ss-note-save">Kaydet</button>
+        </div>
+
+        <div id="ss-note-status"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-modal" id="ss-card-modal">
+    <div class="card-modal-inner">
+      <button type="button" class="note-close" id="ss-card-close">✕</button>
+      <img id="ss-card-preview" alt="Stella Sola paylaşılabilir kart" />
+      <div class="note-nav">
+        <button type="button" class="btn ghost" id="ss-card-download">İndir</button>
+        <button type="button" class="btn" id="ss-card-share">Paylaş</button>
+      </div>
+    </div>
   </div>
 
   <script>
   (function() {
-    var API = 'https://script.google.com/macros/s/AKfycbzj3xWcSksuzDMzDmp7hbzAXFAGgbzQQI5dSpIPHryifUol24RPLY0H-d5Uvn-PwFbf9w/exec';
+    var API = 'https://script.google.com/macros/s/AKfycbzFeYbHlCLl57kx9bx6tzdhdb_nVJg1gp8EGr1JcoZ8sG_ZDr5XJQ0RTX44srV4Zpy_DA/exec';
 
     var confettiActive = false;
     var parcaciklar = [];
@@ -390,6 +584,9 @@
         box.classList.remove('closed'); // kapak açılıyor, sonucu gösteriyor
         btn.disabled = false;
         if (shouldConfetti) patlat();
+
+        var cardBtn = document.getElementById('ss-card-btn');
+        if (cardBtn) cardBtn.addEventListener('click', ssKartOlustur);
       }
 
       // Kapanma animasyonu bitmeden kapak açılmasın diye minimum süre
@@ -425,6 +622,8 @@
               var isim  = match['İsim']  || match['isim']  || match['Ad']   || '';
               var urun  = match['Ürün']  || match['ürün']  || match['Urun'] || '';
               var tarih = match['Tarih'] || match['tarih'] || '';
+              var satinAlmaRaw = match['SatınAlmaTarihi'] || match['Satın Alma Tarihi'] || match['SatinAlmaTarihi'] || match['satinAlmaTarihi'] || '';
+              var gunSayaci = null;
 
               if (tarih) {
                 try {
@@ -434,6 +633,60 @@
                   if (!isNaN(d.getTime()))
                     tarih = d.toLocaleDateString('tr-TR', {day:'numeric', month:'long', year:'numeric'});
                 } catch(e) {}
+              }
+
+              if (satinAlmaRaw) {
+                try {
+                  var ds = satinAlmaRaw.indexOf('T') > -1 || /^\d{4}-\d{2}-\d{2}/.test(satinAlmaRaw)
+                    ? new Date(satinAlmaRaw)
+                    : new Date(satinAlmaRaw.split('.').reverse().join('-'));
+                  if (!isNaN(ds.getTime())) {
+                    var baslangic = new Date(ds); baslangic.setHours(0,0,0,0);
+                    var bugunGece = new Date();   bugunGece.setHours(0,0,0,0);
+                    var farkGunSayisi = Math.floor((bugunGece - baslangic) / 86400000);
+                    if (farkGunSayisi >= 0) gunSayaci = farkGunSayisi;
+                  }
+                } catch(e) {}
+              }
+
+              var counterHtml = (gunSayaci !== null)
+                ? '<div class="day-counter"><span class="day-counter-num">' + gunSayaci + '</span><span class="day-counter-label">Gündür Stella Sola İle Berabersiniz</span></div>'
+                : '';
+
+              /* ── Mektup: kilitli mi, açık mı? ── */
+              var mektup    = match['Mektup'] || match['mektup'] || '';
+              var acilisRaw = match['AçılışTarihi'] || match['Açılış Tarihi'] || match['MektupTarihi'] || match['acilisTarihi'] || '';
+              var letterHtml = '';
+
+              if (mektup) {
+                var hedef = null;
+                if (acilisRaw) {
+                  try {
+                    hedef = (acilisRaw.indexOf('T') > -1 || /^\d{4}-\d{2}-\d{2}/.test(acilisRaw))
+                      ? new Date(acilisRaw)
+                      : new Date(acilisRaw.split('.').reverse().join('-'));
+                  } catch(e) {}
+                }
+                var simdi = new Date();
+
+                if (hedef && !isNaN(hedef.getTime()) && simdi < hedef) {
+                  var farkMs   = hedef - simdi;
+                  var farkGun  = Math.floor(farkMs / 86400000);
+                  var farkSaat = Math.floor((farkMs % 86400000) / 3600000);
+                  var kalanStr = farkGun > 0 ? (farkGun + ' gün ' + farkSaat + ' saat') : (farkSaat + ' saat');
+                  var hedefStr = hedef.toLocaleDateString('tr-TR', {day:'numeric', month:'long', year:'numeric'})
+                               + ' · ' + hedef.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+                  letterHtml =
+                    '<div class="letter-locked">'
+                    + '<p class="letter-locked-text">💌 Size özel bir mektup var — <strong>' + hedefStr + '</strong> tarihinde açılacak (' + kalanStr + ' kaldı).</p>'
+                    + '</div>';
+                } else {
+                  letterHtml =
+                    '<div class="letter-unlocked">'
+                    + '<span class="letter-unlocked-eyebrow">Size Bırakılan Mektup</span>'
+                    + '<p class="letter-unlocked-text">' + String(mektup).replace(/</g,'&lt;') + '</p>'
+                    + '</div>';
+                }
               }
 
               pendingHtml =
@@ -447,9 +700,11 @@
                 + '</div>'
                 + '<span class="result-name">' + isim + '</span>'
                 + (urun ? '<span class="result-urun">' + urun + '</span>' : '')
+                + counterHtml
                 + '<div class="result-divider"></div>'
                 + '<span class="result-meta">İlişkinin Başlangıç Tarihi: ' + (tarih || '—') + '</span>'
                 + '<div class="result-id"><div class="result-id-dot"></div>Stella Sola Onaylı &nbsp;·&nbsp; ' + query + '</div>'
+                + letterHtml
                 + '<div class="result-note">'
                 +   '<div class="result-note-line"></div>'
                 +   '<p class="result-note-text">✨ Işıltınız bize ilham veriyor <strong>' + isim + '</strong>! Bu güzel birlikteliğin bir parçası olduğumuz için mutluyuz; bağınızın sonsuza dek sürmesi dileğiyle. 🤍</p>'
@@ -457,11 +712,13 @@
                 + '</div>'
                 + '<div class="share-teaser" id="ss-share-box">'
                 +   '<span class="share-teaser-text">📸 <strong>Sevdiklerinize göstermek ister misiniz?</strong><br>Bu güzel anı Instagram\'da paylaşarak sevdiklerinizi de bu değerli hediyeden haberdar edebilirsiniz.</span>'
-                +   '<button class="share-dismiss-btn" onclick="ssKapat()">Tamam, Anladım</button>'
+                +   '<button class="share-dismiss-btn" id="ss-card-btn" style="margin-right:8px;">Paylaşılabilir Kart Oluştur</button>'
+                +   '<button class="share-dismiss-btn" onclick="ssKapat()" style="background:transparent;color:var(--gray);">Vazgeç</button>'
                 + '</div>'
                 + '</div>';
 
               shouldConfetti = true;
+              window.ssLastCert = { isim: isim, urun: urun, gun: gunSayaci };
 
             } else {
               pendingHtml = '<div class="result-box result-error"><p>"' + query + '" koduna sahip sertifika bulunamadı. Lütfen kodu kontrol edip tekrar deneyin.</p></div>';
@@ -488,15 +745,265 @@
       }
     };
 
+    /* ── Mektup Bırakma: adım adım pencere ── */
+    var ssNoteLocked = false;
+
+    function ssNoteGoStep(n) {
+      document.querySelectorAll('.note-step').forEach(function(el){
+        el.classList.toggle('active', el.getAttribute('data-step') == n);
+      });
+      document.querySelectorAll('.note-progress span').forEach(function(el){
+        el.classList.toggle('active', el.getAttribute('data-step') == n);
+      });
+      if (n == 3) ssNoteResetLockChoice();
+    }
+
+    function ssNoteResetLockChoice() {
+      ssNoteLocked = false;
+      document.getElementById('ss-note-lock-choice').style.display = 'flex';
+      document.getElementById('ss-note-lock-fields').style.display = 'none';
+      document.getElementById('ss-note-final-nav').style.display = 'none';
+    }
+
+    function ssNoteChooseLock(locked) {
+      ssNoteLocked = locked;
+      document.getElementById('ss-note-lock-choice').style.display = 'none';
+      document.getElementById('ss-note-lock-fields').style.display = locked ? 'block' : 'none';
+      document.getElementById('ss-note-final-nav').style.display = 'flex';
+    }
+
+    function ssNoteOpen()  { document.getElementById('ss-note-modal').classList.add('active'); ssNoteGoStep(1); }
+    function ssNoteClose() { document.getElementById('ss-note-modal').classList.remove('active'); }
+
+    function ssNotKaydet() {
+      var idInput   = document.getElementById('ss-note-certId');
+      var textInput = document.getElementById('ss-note-text');
+      var dateInput = document.getElementById('ss-note-date');
+      var timeInput = document.getElementById('ss-note-time');
+      var status    = document.getElementById('ss-note-status');
+      var saveBtn   = document.getElementById('ss-note-save');
+
+      var id     = idInput.value.trim();
+      var mektup = textInput.value.trim();
+      var tarih  = dateInput.value;          // YYYY-MM-DD
+      var saat   = timeInput.value || '00:00';
+
+      if (!id || !mektup) {
+        status.className = 'note-status err';
+        status.textContent = 'Lütfen tüm alanları doldurun.';
+        return;
+      }
+      if (ssNoteLocked && !tarih) {
+        status.className = 'note-status err';
+        status.textContent = 'Lütfen bir tarih seçin, ya da bir önceki adımda "Hayır" seçin.';
+        return;
+      }
+
+      var tarihValue = ssNoteLocked ? (tarih + 'T' + saat) : '';
+
+      saveBtn.disabled = true;
+      status.className = 'note-status';
+      status.textContent = 'Kaydediliyor…';
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', API, true);
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState !== 4) return;
+        saveBtn.disabled = false;
+
+        if (xhr.status === 200) {
+          status.className = 'note-status ok';
+          status.textContent = 'Mektubunuz kaydedildi.';
+          setTimeout(function() {
+            ssNoteClose();
+            idInput.value = ''; textInput.value = ''; dateInput.value = ''; timeInput.value = '';
+            status.textContent = '';
+          }, 1400);
+        } else {
+          status.className = 'note-status err';
+          status.textContent = 'Kaydedilemedi. Lütfen tekrar deneyin.';
+        }
+      };
+      xhr.send(
+        'action=saveNote&id=' + encodeURIComponent(id) +
+        '&mektup=' + encodeURIComponent(mektup) +
+        '&tarih=' + encodeURIComponent(tarihValue)
+      );
+    }
+
+    /* ── Paylaşılabilir Kart Oluşturma ── */
+    function ssFillTextSpaced(ctx, text, cx, y, spacing) {
+      var chars = text.split('');
+      var widths = chars.map(function(c){ return ctx.measureText(c).width; });
+      var total = widths.reduce(function(a,b){ return a + b; }, 0) + spacing * (chars.length - 1);
+      var x = cx - total / 2;
+      var prevAlign = ctx.textAlign;
+      ctx.textAlign = 'left';
+      chars.forEach(function(c, i) {
+        ctx.fillText(c, x, y);
+        x += widths[i] + spacing;
+      });
+      ctx.textAlign = prevAlign;
+    }
+
+    function ssBuildCardCanvas(data, callback) {
+      var W = 1080, H = 1920;
+      var canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      var ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#0e0e0e';
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.035)';
+      ctx.lineWidth = 1;
+      for (var y = 0; y < H; y += 64) {
+        ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(W, y + 0.5); ctx.stroke();
+      }
+
+      var logo = new Image();
+      logo.crossOrigin = 'anonymous';
+      logo.onload = function() {
+        var lw = 460;
+        var lh = lw * (logo.height / logo.width);
+        var logoTop = 190;
+        ctx.filter = 'invert(1)';
+        ctx.drawImage(logo, (W - lw) / 2, logoTop, lw, lh);
+        ctx.filter = 'none';
+
+        var cy = logoTop + lh + 130;
+
+        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        ctx.font = '600 24px Raleway, sans-serif';
+        ssFillTextSpaced(ctx, 'SERTİFİKA DOĞRULANDI', W/2, cy, 10);
+
+        cy += 90;
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.font = 'italic 700 76px "Playfair Display", serif';
+        ctx.fillText(data.isim || '', W/2, cy);
+
+        if (data.urun) {
+          cy += 56;
+          ctx.fillStyle = 'rgba(255,255,255,0.55)';
+          ctx.font = '500 26px Raleway, sans-serif';
+          ssFillTextSpaced(ctx, String(data.urun).toUpperCase(), W/2, cy, 4);
+        }
+
+        if (data.gun !== null && data.gun !== undefined) {
+          cy += 150;
+          ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+          ctx.beginPath(); ctx.moveTo(W/2 - 60, cy - 90); ctx.lineTo(W/2 + 60, cy - 90); ctx.stroke();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '700 190px "Playfair Display", serif';
+          ctx.fillText(String(data.gun), W/2, cy + 70);
+
+          cy += 130;
+          ctx.fillStyle = 'rgba(255,255,255,0.6)';
+          ctx.font = '600 26px Raleway, sans-serif';
+          ssFillTextSpaced(ctx, 'GÜNDÜR STELLA SOLA İLE BERABERSİNİZ', W/2, cy, 4);
+
+          ctx.beginPath(); ctx.moveTo(W/2 - 60, cy + 60); ctx.lineTo(W/2 + 60, cy + 60); ctx.stroke();
+        }
+
+        var footerY = H - 150;
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.font = '500 24px Raleway, sans-serif';
+        ssFillTextSpaced(ctx, 'SEN DE SERTİFİKANI DOĞRULA', W/2, footerY, 6);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.65)';
+        ctx.font = '400 26px Raleway, sans-serif';
+        var siteUrl = location.origin + location.pathname;
+        ctx.fillText(siteUrl, W/2, footerY + 48);
+
+        if (callback) callback(canvas);
+      };
+      logo.onerror = function() { if (callback) callback(canvas); };
+      logo.src = 'stella-sola-logo.png';
+    }
+
+    function ssKartOlustur() {
+      var data = window.ssLastCert;
+      if (!data) return;
+      document.fonts.ready.then(function() {
+        ssBuildCardCanvas(data, function(canvas) {
+          window.ssLastCardCanvas = canvas;
+          document.getElementById('ss-card-preview').src = canvas.toDataURL('image/png');
+          document.getElementById('ss-card-modal').classList.add('active');
+        });
+      });
+    }
+
+    function ssCardClose() {
+      document.getElementById('ss-card-modal').classList.remove('active');
+    }
+
+    function ssCardDownload() {
+      var canvas = window.ssLastCardCanvas;
+      if (!canvas) return;
+      var link = document.createElement('a');
+      link.download = 'stella-sola-sertifika.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function ssCardShare() {
+      var canvas = window.ssLastCardCanvas;
+      if (!canvas) return;
+      canvas.toBlob(function(blob) {
+        try {
+          var file = new File([blob], 'stella-sola-sertifika.png', { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({
+              files: [file],
+              title: 'Stella Sola Sertifikam',
+              text: 'Stella Sola ile birlikteyiz 🤍'
+            }).catch(function(){});
+            return;
+          }
+        } catch (e) {}
+        ssCardDownload();
+      }, 'image/png');
+    }
+
     function init() {
       var btn   = document.getElementById('ss-btn');
       var input = document.getElementById('ss-certId');
-      if (!btn || btn._ready) return;
-      btn._ready = true;
-      btn.addEventListener('click', ssSorgu);
-      btn.onclick = ssSorgu;
-      input.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.keyCode === 13) ssSorgu();
+      if (btn && !btn._ready) {
+        btn._ready = true;
+        btn.addEventListener('click', ssSorgu);
+        btn.onclick = ssSorgu;
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.keyCode === 13) ssSorgu();
+        });
+      }
+
+      var pairs = [
+        ['ss-note-open',  ssNoteOpen],
+        ['ss-note-close', ssNoteClose],
+        ['ss-note-save',  ssNotKaydet],
+        ['ss-note-next1', function(){
+          if (!document.getElementById('ss-note-certId').value.trim()) { alert('Lütfen sertifika ID girin.'); return; }
+          ssNoteGoStep(2);
+        }],
+        ['ss-note-back2', function(){ ssNoteGoStep(1); }],
+        ['ss-note-next2', function(){
+          if (!document.getElementById('ss-note-text').value.trim()) { alert('Lütfen mektubu yazın.'); return; }
+          ssNoteGoStep(3);
+        }],
+        ['ss-note-back-to-2', function(){ ssNoteGoStep(2); }],
+        ['ss-note-lock-no',  function(){ ssNoteChooseLock(false); }],
+        ['ss-note-lock-yes', function(){ ssNoteChooseLock(true); }],
+        ['ss-note-back3',    function(){ ssNoteResetLockChoice(); }],
+        ['ss-card-close',    ssCardClose],
+        ['ss-card-download', ssCardDownload],
+        ['ss-card-share',    ssCardShare]
+      ];
+      pairs.forEach(function(p) {
+        var el = document.getElementById(p[0]);
+        if (el && !el._ready) { el._ready = true; el.addEventListener('click', p[1]); }
       });
     }
 
