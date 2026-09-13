@@ -6,7 +6,7 @@
   <title>Sertifika Doğrulama · Stella Sola</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=Raleway:wght@200;300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=Raleway:wght@200;300;400;500;600&family=Cinzel:wght@500;600&display=swap" rel="stylesheet" />
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -229,6 +229,12 @@
     }
     .card-modal-inner img { width: 100%; display: block; margin-bottom: 1rem; }
     .card-modal-inner .note-nav { flex-wrap: nowrap; }
+    .tag-hint {
+      margin-top: 1rem; text-align: center;
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 0.82rem; color: var(--gray); line-height: 1.6;
+    }
+    .tag-hint strong { color: var(--black); font-style: normal; font-weight: 600; }
 
     .result-error {
       background: var(--off); border-left: 3px solid var(--gray); padding: 1.2rem 1.5rem;
@@ -495,6 +501,7 @@
         <button type="button" class="btn ghost" id="ss-card-download">İndir</button>
         <button type="button" class="btn" id="ss-card-share">Paylaş</button>
       </div>
+      <p class="tag-hint">Bizi etiketleyin <strong>@stellasola</strong>, hikâyenizde yer verelim.</p>
     </div>
   </div>
 
@@ -718,7 +725,7 @@
                 + '</div>';
 
               shouldConfetti = true;
-              window.ssLastCert = { isim: isim, urun: urun, gun: gunSayaci };
+              window.ssLastCert = { isim: isim, urun: urun, gun: gunSayaci, id: query, tarih: tarih };
 
             } else {
               pendingHtml = '<div class="result-box result-error"><p>"' + query + '" koduna sahip sertifika bulunamadı. Lütfen kodu kontrol edip tekrar deneyin.</p></div>';
@@ -882,93 +889,132 @@
       ctx.restore();
     }
 
+    function ssSerialNo(id) {
+      var str = String(id || '').toUpperCase();
+      var hash = 0;
+      for (var i = 0; i < str.length; i++) { hash = (hash * 31 + str.charCodeAt(i)) >>> 0; }
+      var padded = ('00000' + (hash % 100000)).slice(-5);
+      return 'STS-' + new Date().getFullYear() + '-' + padded;
+    }
+
     function ssBuildCardCanvas(data, callback) {
       var W = 1080, H = 1920;
       var canvas = document.createElement('canvas');
       canvas.width = W; canvas.height = H;
       var ctx = canvas.getContext('2d');
 
-      ctx.fillStyle = '#0e0e0e';
+      var INK  = '#231f18';
+      var GOLD = '#a9803f';
+
+      ctx.fillStyle = '#f8f4ec';
       ctx.fillRect(0, 0, W, H);
 
-      var vg = ctx.createRadialGradient(W/2, H*0.42, 80, W/2, H*0.42, W*0.78);
-      vg.addColorStop(0, 'rgba(255,255,255,0.055)');
-      vg.addColorStop(1, 'rgba(255,255,255,0)');
+      var vg = ctx.createRadialGradient(W/2, H*0.4, 80, W/2, H*0.4, W*0.85);
+      vg.addColorStop(0, 'rgba(255,250,235,0.6)');
+      vg.addColorStop(1, 'rgba(255,250,235,0)');
       ctx.fillStyle = vg;
       ctx.fillRect(0, 0, W, H);
 
-      ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+      ctx.strokeStyle = 'rgba(35,31,24,0.03)';
       ctx.lineWidth = 1;
       for (var y = 0; y < H; y += 64) {
         ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(W, y + 0.5); ctx.stroke();
       }
 
-      ctx.strokeStyle = 'rgba(255,255,255,0.14)';
-      ctx.lineWidth = 1.4;
-      ssRoundedRectPath(ctx, 56, 56, W - 112, H - 112, 2);
+      // Çift çerçeve: dış ince ink, iç ince altın
+      ctx.strokeStyle = 'rgba(35,31,24,0.35)';
+      ctx.lineWidth = 1.6;
+      ssRoundedRectPath(ctx, 50, 50, W - 100, H - 100, 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(169,128,63,0.55)';
+      ctx.lineWidth = 1.2;
+      ssRoundedRectPath(ctx, 66, 66, W - 132, H - 132, 2);
       ctx.stroke();
 
       var logo = new Image();
       logo.crossOrigin = 'anonymous';
       logo.onload = function() {
-        var lw = 400;
+        var lw = 360;
         var lh = lw * (logo.height / logo.width);
-        var logoTop = 168;
-        ctx.filter = 'invert(1)';
-        ctx.globalAlpha = 0.96;
+        var logoTop = 148;
+        ctx.globalAlpha = 0.92;
         ctx.drawImage(logo, (W - lw) / 2, logoTop, lw, lh);
         ctx.globalAlpha = 1;
-        ctx.filter = 'none';
 
         ctx.textAlign = 'center';
-        var cy = logoTop + lh + 70;
-        ssDrawDivider(ctx, W/2, cy, 220);
+        var cy = logoTop + lh + 78;
+
+        ctx.fillStyle = GOLD;
+        ctx.font = '600 32px Cinzel, serif';
+        ssFillTextSpaced(ctx, 'ÖMÜR BOYU TEK BAĞLILIK', W/2, cy, 6);
+        cy += 46;
+        ssFillTextSpaced(ctx, 'SERTİFİKASI', W/2, cy, 6);
 
         cy += 66;
-        ctx.fillStyle = 'rgba(255,255,255,0.5)';
-        ctx.font = '600 24px Raleway, sans-serif';
-        ssFillTextSpaced(ctx, 'SERTİFİKA DOĞRULANDI', W/2, cy, 10);
+        ssDrawDivider(ctx, W/2, cy, 200, GOLD);
 
-        cy += 108;
-        ctx.fillStyle = 'rgba(255,255,255,0.97)';
-        ctx.font = 'italic 700 78px "Playfair Display", serif';
+        cy += 58;
+        ctx.fillStyle = 'rgba(35,31,24,0.55)';
+        ctx.font = '600 23px Raleway, sans-serif';
+        ssFillTextSpaced(ctx, '✓  SERTİFİKA DOĞRULANDI', W/2, cy, 5);
+
+        cy += 100;
+        ctx.fillStyle = INK;
+        ctx.font = 'italic 700 76px "Playfair Display", serif';
         ctx.fillText(data.isim || '', W/2, cy);
 
         if (data.urun) {
-          cy += 54;
-          ctx.fillStyle = 'rgba(255,255,255,0.5)';
-          ctx.font = '500 25px Raleway, sans-serif';
+          cy += 52;
+          ctx.fillStyle = 'rgba(35,31,24,0.5)';
+          ctx.font = '500 24px Raleway, sans-serif';
           ssFillTextSpaced(ctx, String(data.urun).toUpperCase(), W/2, cy, 4);
         }
 
-        if (data.gun !== null && data.gun !== undefined) {
-          cy += 110;
-          ssDrawDivider(ctx, W/2, cy, 160);
+        cy += 84;
+        ctx.fillStyle = INK;
+        ctx.font = 'italic 400 33px "Playfair Display", serif';
+        ctx.fillText('Bir ömür, tek bir kalp.', W/2, cy);
+        cy += 46;
+        ctx.fillText('Bu yüzük yalnızca ' + (data.isim || '') + "'a adanmıştır.", W/2, cy);
 
-          cy += 150;
-          ctx.fillStyle = 'rgba(255,255,255,0.98)';
-          ctx.font = '700 196px "Playfair Display", serif';
+        cy += 86;
+        ssDrawDivider(ctx, W/2, cy, 160, GOLD);
+
+        if (data.gun !== null && data.gun !== undefined) {
+          cy += 148;
+          ctx.fillStyle = GOLD;
+          ctx.font = '700 186px "Playfair Display", serif';
           ctx.fillText(String(data.gun), W/2, cy);
 
-          cy += 58;
-          ctx.fillStyle = 'rgba(255,255,255,0.55)';
-          ctx.font = '600 25px Raleway, sans-serif';
+          cy += 56;
+          ctx.fillStyle = 'rgba(35,31,24,0.55)';
+          ctx.font = '600 24px Raleway, sans-serif';
           ssFillTextSpaced(ctx, 'GÜNDÜR STELLA SOLA İLE BERABERSİNİZ', W/2, cy, 4);
+
+          cy += 78;
+          ssDrawDivider(ctx, W/2, cy, 160, GOLD);
         }
 
-        var badgeW = 760, badgeH = 150;
+        cy += 56;
+        ctx.fillStyle = 'rgba(35,31,24,0.5)';
+        ctx.font = '500 21px Raleway, sans-serif';
+        var seriNo = ssSerialNo(data.id);
+        var tescilStr = data.tarih ? ('   ·   TESCİL TARİHİ: ' + String(data.tarih).toUpperCase()) : '';
+        ssFillTextSpaced(ctx, 'SERİ NO: ' + seriNo + tescilStr, W/2, cy, 2);
+
+        var badgeW = 780, badgeH = 150;
         var badgeX = (W - badgeW) / 2;
-        var badgeY = H - 260;
-        ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+        var badgeY = H - 250;
+        ctx.strokeStyle = 'rgba(35,31,24,0.25)';
         ctx.lineWidth = 1.2;
         ssRoundedRectPath(ctx, badgeX, badgeY, badgeW, badgeH, 4);
         ctx.stroke();
 
-        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        ctx.fillStyle = 'rgba(35,31,24,0.55)';
         ctx.font = '600 23px Raleway, sans-serif';
         ssFillTextSpaced(ctx, 'SEN DE SERTİFİKANI DOĞRULA', W/2, badgeY + 58, 6);
 
-        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.fillStyle = INK;
         ctx.font = '400 26px Raleway, sans-serif';
         var siteUrl = location.origin + location.pathname;
         ctx.fillText(siteUrl, W/2, badgeY + 102);
