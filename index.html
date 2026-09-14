@@ -249,12 +249,37 @@
 
     /* ── Mektup Bırakma: tetikleyici + adım adım pencere ── */
     .note-trigger {
-      display: inline-block; margin-top: 2rem; background: none; border: none;
-      color: rgba(255,255,255,0.55); font-family: 'Raleway', sans-serif; font-size: 0.72rem;
-      letter-spacing: 0.08em; cursor: pointer; text-decoration: underline; text-underline-offset: 4px;
-      transition: color 0.3s;
+      position: relative;
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      margin: 2.6rem auto 0; padding: 1.1rem 1.6rem;
+      max-width: 360px; width: 100%;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.28);
+      color: #fff; cursor: pointer;
+      animation: noteGlow 3.2s ease-in-out infinite;
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
     }
-    .note-trigger:hover { color: #fff; }
+    .note-trigger:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.55);
+      transform: translateY(-2px);
+    }
+    .note-trigger-icon { font-size: 1.15rem; line-height: 1; }
+    .note-trigger-text {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 0.98rem; letter-spacing: 0.01em;
+    }
+    .note-trigger-badge {
+      position: absolute; top: -11px; right: -10px;
+      background: #fff; color: var(--black);
+      font-family: 'Raleway', sans-serif; font-size: 0.55rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 9px;
+    }
+    @keyframes noteGlow {
+      0%, 100% { box-shadow: 0 0 0 rgba(255,255,255,0); }
+      50%      { box-shadow: 0 0 22px rgba(255,255,255,0.14); }
+    }
 
     .note-modal {
       position: fixed; inset: 0; z-index: 1500;
@@ -422,7 +447,11 @@
       </div>
     </div>
 
-    <button type="button" class="note-trigger" id="ss-note-open">💌 Sevdiğinize Bir Mektup Bırakın</button>
+    <button type="button" class="note-trigger" id="ss-note-open">
+      <span class="note-trigger-badge">Yeni</span>
+      <span class="note-trigger-icon">💌</span>
+      <span class="note-trigger-text">Sevdiğinize Bir Mektup Bırakın</span>
+    </button>
 
     <div class="footer">© 2026 Stella Sola · Tüm Hakları Saklıdır</div>
   </div>
@@ -442,10 +471,6 @@
         <div class="note-field">
           <span class="field-label">Sertifika ID</span>
           <input type="text" id="ss-note-certId" class="field-input" placeholder="Sertifika ID" autocomplete="off" spellcheck="false" />
-        </div>
-        <div class="note-field">
-          <span class="field-label">Telefon Numaranızın Son 4 Hanesi</span>
-          <input type="tel" id="ss-note-phone4" class="field-input" placeholder="Örn. 4821" maxlength="4" inputmode="numeric" autocomplete="off" />
         </div>
         <div class="note-nav">
           <button type="button" class="btn" id="ss-note-next1">İleri</button>
@@ -732,21 +757,19 @@
     function ssNoteClose() { document.getElementById('ss-note-modal').classList.remove('active'); }
 
     function ssNotKaydet() {
-      var idInput    = document.getElementById('ss-note-certId');
-      var phoneInput = document.getElementById('ss-note-phone4');
-      var textInput  = document.getElementById('ss-note-text');
-      var dateInput  = document.getElementById('ss-note-date');
-      var timeInput  = document.getElementById('ss-note-time');
-      var status     = document.getElementById('ss-note-status');
-      var saveBtn    = document.getElementById('ss-note-save');
+      var idInput   = document.getElementById('ss-note-certId');
+      var textInput = document.getElementById('ss-note-text');
+      var dateInput = document.getElementById('ss-note-date');
+      var timeInput = document.getElementById('ss-note-time');
+      var status    = document.getElementById('ss-note-status');
+      var saveBtn   = document.getElementById('ss-note-save');
 
-      var id      = idInput.value.trim();
-      var phone4  = phoneInput.value.trim();
-      var mektup  = textInput.value.trim();
-      var tarih   = dateInput.value;
-      var saat    = timeInput.value || '00:00';
+      var id     = idInput.value.trim();
+      var mektup = textInput.value.trim();
+      var tarih  = dateInput.value;
+      var saat   = timeInput.value || '00:00';
 
-      if (!id || !phone4 || !mektup) {
+      if (!id || !mektup) {
         status.className = 'note-status err';
         status.textContent = 'Lütfen tüm alanları doldurun.';
         return;
@@ -778,7 +801,7 @@
           status.textContent = 'Mektubunuz kaydedildi.';
           setTimeout(function() {
             ssNoteClose();
-            idInput.value = ''; phoneInput.value = ''; textInput.value = ''; dateInput.value = ''; timeInput.value = '';
+            idInput.value = ''; textInput.value = ''; dateInput.value = ''; timeInput.value = '';
             status.textContent = '';
           }, 1400);
         } else {
@@ -788,7 +811,6 @@
       };
       xhr.send(
         'action=saveNote&id=' + encodeURIComponent(id) +
-        '&telefon4=' + encodeURIComponent(phone4) +
         '&mektup=' + encodeURIComponent(mektup) +
         '&tarih=' + encodeURIComponent(tarihValue)
       );
@@ -1046,9 +1068,7 @@
         ['ss-note-save',  ssNotKaydet],
         ['ss-note-next1', function(){
           var idVal = document.getElementById('ss-note-certId').value.trim();
-          var phoneVal = document.getElementById('ss-note-phone4').value.trim();
           if (!idVal) { alert('Lütfen sertifika ID girin.'); return; }
-          if (!/^\d{4}$/.test(phoneVal)) { alert('Lütfen telefon numaranızın son 4 hanesini girin.'); return; }
           ssNoteGoStep(2);
         }],
         ['ss-note-back2', function(){ ssNoteGoStep(1); }],
