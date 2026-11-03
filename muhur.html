@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stella Sola · Yüzüğünü Mühürle</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: #0b0b0b; color: #f4efe7;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .stage { position: relative; min-height: 100vh; overflow: hidden;
+    display: flex; justify-content: center; align-items: flex-start; }
+  .content { width: 100%; max-width: 440px; padding: 30px 18px 48px; }
+
+  .brand { text-align: center; margin-bottom: 20px; }
+  .brand .name { font-size: 15px; letter-spacing: 6px; font-weight: 500; }
+  .brand .tag { font-size: 10px; letter-spacing: 3px; color: #8a8a8a; margin-top: 7px; }
+
+  .dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 22px; }
+  .dot { width: 24px; height: 3px; border-radius: 2px; background: #2b2b2b; transition: background .4s; }
+  .dot.on { background: #f4efe7; }
+
+  .card { background: #141414; border: 1px solid #262626; border-radius: 18px; padding: 30px 24px; }
+
+  .step { opacity: 0; transform: translateY(14px); transition: opacity .4s ease, transform .4s ease; }
+  .step.show { opacity: 1; transform: translateY(0); }
+  .step.hide { display: none; }
+
+  h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 500; font-size: 24px; text-align: center; margin-bottom: 10px; line-height: 1.3; }
+  .lead { font-size: 13.5px; line-height: 1.7; color: #b0b0b0; text-align: center; margin-bottom: 26px; }
+
+  label { display: block; font-size: 12px; letter-spacing: .5px; color: #cfcfcf; margin: 0 0 8px; }
+  .req { color: #c98a8a; }
+  input { width: 100%; background: #0b0b0b; border: 1px solid #333; border-radius: 10px; color: #f4efe7; font-size: 16px; padding: 13px 14px; font-family: inherit; }
+  input:focus { outline: none; border-color: #f4efe7; }
+  input::placeholder { color: #6a6a6a; }
+  .field { margin-bottom: 18px; }
+  .err { font-size: 12px; color: #d98a8a; min-height: 15px; margin-top: 4px; display: block; }
+
+  .trust { background: #0e0e0e; border: 1px solid #242424; border-radius: 11px; padding: 14px 15px; margin: 2px 0 22px; font-size: 12px; line-height: 1.65; color: #9a9a9a; }
+  .trust b { color: #cfcfcf; font-weight: 500; }
+
+  button { width: 100%; background: #f4efe7; color: #0b0b0b; border: none; border-radius: 11px; font-size: 15px; font-weight: 600; padding: 15px; cursor: pointer; font-family: inherit; letter-spacing: .3px; }
+  button:active { transform: scale(.99); }
+  button:disabled { opacity: .55; cursor: default; }
+  .ghost { background: transparent; color: #8a8a8a; font-weight: 400; font-size: 13px; padding: 12px; margin-top: 4px; }
+
+  .seal-big { font-size: 40px; text-align: center; margin-bottom: 16px; }
+  .ordernum { display: inline-block; background: #0e0e0e; border: 1px solid #2b2b2b; border-radius: 8px; padding: 4px 12px; color: #f4efe7; font-size: 14px; letter-spacing: 1px; }
+
+  .success { text-align: center; position: relative; }
+  .dropzone { position: relative; height: 86px; margin-bottom: 6px; }
+  .stamp { position: absolute; left: 50%; margin-left: -34px; bottom: 8px; width: 68px; height: 68px; border-radius: 50%;
+    background: #f4efe7; border: 2px solid #7a7a7a; display: flex; align-items: center; justify-content: center; opacity: 0; }
+  .stamp .em { color: #141414; font-size: 30px; line-height: 1; }
+  .stampring { position: absolute; left: 50%; margin-left: -34px; bottom: 8px; width: 68px; height: 68px; border-radius: 50%;
+    border: 2px solid #f4efe7; opacity: 0; }
+  .success.play .stamp { animation: stampDrop .72s cubic-bezier(.34,.62,.3,1) forwards; }
+  .success.play .stampring { animation: stampRing .7s ease .44s forwards; }
+  @keyframes stampDrop {
+    0%   { opacity: 0; transform: translateY(-140px) scale(1.7) rotate(-6deg); }
+    45%  { opacity: 1; }
+    64%  { opacity: 1; transform: translateY(0) scale(.84) rotate(0deg); }
+    80%  { transform: translateY(-8px) scale(1.06); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes stampRing {
+    0%   { opacity: 0; transform: scale(.55); }
+    12%  { opacity: .55; }
+    100% { opacity: 0; transform: scale(3.4); }
+  }
+  .success h2 { font-family: Georgia, serif; font-weight: 500; font-size: 23px; margin-bottom: 12px; }
+  .success p { font-size: 14px; line-height: 1.7; color: #b0b0b0; }
+
+  .foot { text-align: center; font-size: 11px; color: #5a5a5a; margin-top: 24px; letter-spacing: 2px; }
+
+  /* ---- KUTU KAPAGI (iki panel, beyaz) ---- */
+  .lids { position: fixed; inset: 0; z-index: 50; pointer-events: none; visibility: hidden; }
+  .lid { position: absolute; top: 0; bottom: 0; width: 50%; background: #f6f6f4; overflow: hidden;
+    transition: transform 1.05s cubic-bezier(.76,0,.24,1); box-shadow: 0 0 44px rgba(0,0,0,.45); }
+  .lid.left  { left: 0;  transform: translateX(-101%); border-right: 1px solid #e2e2e2; }
+  .lid.right { right: 0; transform: translateX(101%);  border-left: 1px solid #e2e2e2; }
+  .lids.closed .lid.left  { transform: translateX(0); }
+  .lids.closed .lid.right { transform: translateX(0); }
+
+  /* seam'de birlesen bolunmus logo (gercek logo gorseli) */
+  .logowrap { position: absolute; top: 50%; transform: translateY(-50%); width: 100vw; }
+  .lid.left  .logowrap { left: 0; }
+  .lid.right .logowrap { right: 0; }
+  .logoimg { display: block; margin: 0 auto; width: 58vw; max-width: 280px; height: auto; }
+  .lidtag { text-align: center; font-size: 11px; letter-spacing: 5px; color: #7a7a7a; margin-top: 16px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+  .lids .status { position: absolute; left: 0; right: 0; bottom: 26%; text-align: center; font-size: 11px;
+    letter-spacing: 3px; color: #7a7a7a; opacity: 0; transition: opacity .3s ease; z-index: 2; }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <div class="content">
+    <div class="brand">
+      <div class="name">STELLA SOLA</div>
+      <div class="tag">TEK KİŞİ · TEK YÜZÜK</div>
+    </div>
+
+    <div class="dots">
+      <div class="dot on" id="d1"></div><div class="dot" id="d2"></div><div class="dot" id="d3"></div>
+    </div>
+
+    <div class="card">
+      <div class="step show" id="step1">
+        <h1>Yolculuk başlıyor</h1>
+        <p class="lead">Siparişini bulabilmemiz için sipariş numaranı gir. Numaranı sana gönderdiğimiz sipariş mailinde bulabilirsin.</p>
+        <div class="field">
+          <label>Sipariş Numarası <span class="req">*</span></label>
+          <input id="order" inputmode="numeric" placeholder="Örn. 1024">
+          <span class="err" id="e-order"></span>
+        </div>
+        <button id="btn1">Devam Et</button>
+      </div>
+
+      <div class="step hide" id="step2">
+        <div class="seal-big">🤍</div>
+        <h1>Siparişini bulduk,<br><span id="greetName" style="color:#f4efe7;">—</span></h1>
+        <p class="lead"><span class="ordernum" id="shownOrder">#—</span><br><br>
+          Bu yüzük, bir ömür boyu tek bir kişiye ait olacak. Şimdi onu kime adadığını belirleyelim ve aşkını sonsuza dek mühürleyelim.</p>
+        <button id="btn2">Mühürlemeye Başla</button>
+        <button class="ghost" id="back2">← Sipariş numarasını değiştir</button>
+      </div>
+
+      <div class="step hide" id="step3">
+        <h1>Aşkını Mühürle</h1>
+        <p class="lead">Bu bilgiler, yüzüğünün kişiye özel sertifikasında yer alacak.</p>
+        <div class="field"><label>Satın Alan Kişi <span class="req">*</span></label>
+          <input id="buyer" placeholder="Adın ve soyadın"><span class="err" id="e-buyer"></span></div>
+        <div class="field"><label>Yüzüğün Sahibi <span class="req">*</span></label>
+          <input id="owner" placeholder="Yüzük kime ait olacak?"><span class="err" id="e-owner"></span></div>
+        <div class="field"><label>İlişkinizin Başlangıç Tarihi <span class="req">*</span></label>
+          <input id="date" type="date"><span class="err" id="e-date"></span></div>
+        <div class="field"><label>T.C. Kimlik Numaran <span class="req">*</span></label>
+          <input id="tc" inputmode="numeric" maxlength="11" placeholder="11 haneli kimlik numaran"><span class="err" id="e-tc"></span></div>
+        <div class="trust"><b>Neden kimlik numarası?</b> "Tek kişi, tek yüzük" sözümüzü güvence altına almak için kimliğini doğruluyoruz. Numaran yalnızca bu kontrolde kullanılır, saklanmaz ve kimseyle paylaşılmaz.</div>
+        <button id="btn3">Yüzüğümü Mühürle</button>
+        <button class="ghost" id="back3">← Geri</button>
+      </div>
+
+      <div class="step hide" id="step4">
+        <div class="success" id="successBox">
+          <div class="dropzone">
+            <span class="stampring"></span>
+            <div class="stamp"><span class="em">&#9829;</span></div>
+          </div>
+          <h2>Mühürlendi</h2>
+          <p>Aşkın artık sonsuza dek kayıt altında. Yüzüğün üretime hazırlanıyor; kısa süre içinde seninle iletişime geçeceğiz.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">STELLA SOLA</div>
+  </div>
+
+  <!-- kutu kapağı -->
+  <div class="lids" id="lids">
+    <div class="lid left"><div class="logowrap"><img class="logoimg" src="stella-sola-logo.png" alt="Stella Sola"><div class="lidtag">BİR ÖMÜR · TEK SÖZ</div></div></div>
+    <div class="lid right"><div class="logowrap"><img class="logoimg" src="stella-sola-logo.png" alt="Stella Sola"><div class="lidtag">BİR ÖMÜR · TEK SÖZ</div></div></div>
+    <div class="status" id="lidStatus">MÜHÜRLENİYOR</div>
+  </div>
+
+</div>
+
+<script>
+  var APPS_SCRIPT_URL = "BURAYA_APPS_SCRIPT_URL";
+  function $(id){ return document.getElementById(id); }
+  function setErr(id,msg){ var el=$("e-"+id); if(el) el.textContent = msg||""; }
+
+  var lids=$("lids");
+  // kapağı kapat, altındaki adımı değiştir, sonra aç
+  function lidTransition(from,to,dotIdx,statusText){
+    $("lidStatus").textContent = statusText || "MÜHÜRLENİYOR";
+    lids.style.visibility="visible";
+    lids.classList.remove("closed");   // açık taban durumu
+    void lids.offsetWidth;             // reflow: kapanma da off-screen'den animasyonlu başlasın
+    lids.style.pointerEvents="auto";
+    lids.classList.add("closed");      // KAPAN (1.05s)
+    $("lidStatus").style.opacity="0";
+    setTimeout(function(){ $("lidStatus").style.opacity="1"; }, 1080);  // tam kapandıktan sonra
+    setTimeout(function(){ $("lidStatus").style.opacity="0"; }, 1450);  // açılırken hemen git
+    setTimeout(function(){             // tam kapalıyken altındaki adımı değiştir
+      $("step"+from).classList.remove("show");
+      $("step"+from).classList.add("hide");
+      $("step"+to).classList.remove("hide");
+      void $("step"+to).offsetWidth;
+      $("step"+to).classList.add("show");
+      for(var i=1;i<=3;i++){ $("d"+i).classList.toggle("on", i<=dotIdx); }
+    }, 1200);
+    setTimeout(function(){ lids.classList.remove("closed"); }, 1450); // AÇIL (1.05s)
+    if(to===4){ setTimeout(function(){ var sb=$("successBox"); if(sb) sb.classList.add("play"); }, 2250); }
+    setTimeout(function(){ lids.style.pointerEvents="none"; lids.style.visibility="hidden"; }, 2560);
+  }
+  // kapaksız basit geçiş (geri butonları)
+  function fade(from,to,dotIdx){
+    $("step"+from).classList.remove("show");
+    setTimeout(function(){
+      $("step"+from).classList.add("hide");
+      $("step"+to).classList.remove("hide");
+      void $("step"+to).offsetWidth;
+      $("step"+to).classList.add("show");
+      for(var i=1;i<=3;i++){ $("d"+i).classList.toggle("on", i<=dotIdx); }
+    },180);
+  }
+
+  function validTC(v){
+    if(!/^[1-9][0-9]{10}$/.test(v)) return false;
+    var d=v.split("").map(Number);
+    var odd=d[0]+d[2]+d[4]+d[6]+d[8], ev=d[1]+d[3]+d[5]+d[7];
+    var d10=((odd*7)-ev)%10; if(d10<0) d10+=10;
+    if(d10!==d[9]) return false;
+    var s=0; for(var i=0;i<10;i++) s+=d[i];
+    return s%10===d[10];
+  }
+
+  $("btn1").addEventListener("click", function(){
+    setErr("order","");
+    var order=$("order").value.trim();
+    if(!order){ setErr("order","Sipariş numaranı gir."); return; }
+    $("shownOrder").textContent="#"+order;
+
+    // İsmi siparişten getir. Apps Script bağlanınca gerçek isim gelecek.
+    // Beklenen cevap: { found:true, name:"Ahmet" }
+    function proceed(name){
+      $("greetName").textContent = name || "Değerli müşterimiz";
+      lidTransition(1,2,2,"SİPARİŞİN ARANIYOR");
+    }
+
+    if(APPS_SCRIPT_URL==="BURAYA_APPS_SCRIPT_URL"){
+      proceed("Ahmet");  // TEST: örnek isim
+      return;
+    }
+    fetch(APPS_SCRIPT_URL+"?order="+encodeURIComponent(order))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d && d.found){ proceed(d.name); }
+        else { setErr("order","Bu numarayla bir sipariş bulamadık. Kontrol edip tekrar dene."); }
+      })
+      .catch(function(){ proceed(""); }); // bağlantı hatası olsa da akış durmasın
+  });
+  $("btn2").addEventListener("click", function(){ fade(2,3,3); });
+  $("back2").addEventListener("click", function(){ fade(2,1,1); });
+  $("back3").addEventListener("click", function(){ fade(3,2,2); });
+
+  $("btn3").addEventListener("click", function(){
+    ["buyer","owner","date","tc"].forEach(function(f){ setErr(f,""); });
+    var buyer=$("buyer").value.trim(), owner=$("owner").value.trim(),
+        date=$("date").value.trim(), tc=$("tc").value.trim(), order=$("order").value.trim();
+    var ok=true;
+    if(!buyer){ setErr("buyer","Adını gir."); ok=false; }
+    if(!owner){ setErr("owner","Yüzüğün sahibini gir."); ok=false; }
+    if(!date){ setErr("date","Tarihi seç."); ok=false; }
+    if(!tc){ setErr("tc","Kimlik numaranı gir."); ok=false; }
+    else if(!validTC(tc)){ setErr("tc","Geçerli bir T.C. kimlik numarası gir."); ok=false; }
+    if(!ok) return;
+
+    var btn=$("btn3"); btn.disabled=true; btn.textContent="Gönderiliyor…";
+    var payload={ order:order, buyer:buyer, owner:owner, date:date, tc:tc };
+    function done(){ lidTransition(3,4,3,"MÜHÜRLENİYOR"); }
+
+    if(APPS_SCRIPT_URL==="BURAYA_APPS_SCRIPT_URL"){ setTimeout(done,400); return; }
+    fetch(APPS_SCRIPT_URL,{ method:"POST", body:JSON.stringify(payload) })
+      .then(done).catch(function(){ btn.disabled=false; btn.textContent="Yüzüğümü Mühürle"; setErr("tc","Bir sorun oldu, tekrar dene."); });
+  });
+
+  // Tarih: cihazın kendi takvimi (iOS + Android stabil). Dokununca takvimi aç, ileri tarihi engelle.
+  (function(){
+    var di=$("date");
+    var t=new Date(); var mm=String(t.getMonth()+1).padStart(2,"0"); var dd=String(t.getDate()).padStart(2,"0");
+    di.max = t.getFullYear()+"-"+mm+"-"+dd;
+    function openPicker(){ if(di.showPicker){ try{ di.showPicker(); }catch(e){} } }
+    di.addEventListener("focus", openPicker);
+    di.addEventListener("click", openPicker);
+  })();
+  $("tc").addEventListener("input", function(e){ e.target.value=e.target.value.replace(/[^0-9]/g,""); });
+  $("order").addEventListener("input", function(e){ e.target.value=e.target.value.replace(/[^0-9]/g,""); });
+</script>
+</body>
+</html>
