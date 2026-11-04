@@ -77,7 +77,8 @@
     12%  { opacity: .55; }
     100% { opacity: 0; transform: scale(3.4); }
   }
-  .success h2 { font-family: Georgia, serif; font-weight: 500; font-size: 23px; margin-bottom: 12px; }
+  .success h2 { font-family: Georgia, serif; font-weight: 500; font-size: 23px; margin-bottom: 8px; }
+  .thanks { font-size: 15px; color: #f4efe7; margin-bottom: 10px; }
   .success p { font-size: 14px; line-height: 1.7; color: #b0b0b0; }
 
   .foot { text-align: center; font-size: 11px; color: #5a5a5a; margin-top: 14px; letter-spacing: 2px; }
@@ -131,7 +132,7 @@
 
       <div class="step hide" id="step2">
         <div class="seal-big">🤍</div>
-        <h1>Siparişini bulduk,<br><span id="greetName" style="color:#f4efe7;">—</span></h1>
+        <h1>Siparişini bulduk</h1>
         <p class="lead"><span class="ordernum" id="shownOrder">#—</span><br><br>
           Bu yüzük, bir ömür boyu tek bir kişiye ait olacak. Şimdi onu kime adadığını belirleyelim ve aşkını sonsuza dek mühürleyelim.</p>
         <button id="btn2">Mühürlemeye Başla</button>
@@ -161,6 +162,7 @@
             <div class="stamp"><span class="em">&#9829;</span></div>
           </div>
           <h2>Mühürlendi</h2>
+          <p class="thanks" id="thanks"></p>
           <p>Aşkın artık sonsuza dek kayıt altında. Yüzüğün üretime hazırlanıyor; kısa süre içinde seninle iletişime geçeceğiz.</p>
         </div>
       </div>
@@ -257,7 +259,6 @@
     if(!order){ setErr("order","Sipariş numaranı gir."); return; }
     function proceed(name){
       $("shownOrder").textContent="#"+order;
-      $("greetName").textContent = name || "Değerli müşterimiz";
       lidTransition(1,2,2,"SİPARİŞİN ARANIYOR");
     }
     var btn=$("btn1"); btn.disabled=true; btn.textContent="Aranıyor…";
@@ -287,7 +288,11 @@
 
     var btn=$("btn3"); btn.disabled=true; btn.textContent="Gönderiliyor…";
     var payload={ order:order, buyer:buyer, owner:owner, date:date, tc:tc };
-    function done(){ lidTransition(3,4,3,"MÜHÜRLENİYOR"); }
+    function done(){
+      var ad = (buyer.split(/\s+/)[0] || buyer);
+      $("thanks").textContent = ad + ", teşekkürler 🤍";
+      lidTransition(3,4,3,"MÜHÜRLENİYOR");
+    }
 
     if(APPS_SCRIPT_URL==="BURAYA_APPS_SCRIPT_URL"){ setTimeout(done,400); return; }
     fetch(APPS_SCRIPT_URL,{ method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(payload) })
