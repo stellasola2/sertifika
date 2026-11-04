@@ -8,15 +8,14 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
-    overflow: hidden;
     background: #0b0b0b; color: #f4efe7;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 
-  .stage { position: relative; min-height: 100vh; min-height: 100dvh; height: 100dvh; overflow: hidden;
-    display: flex; justify-content: center; align-items: center; }
-  .content { width: 100%; max-width: 440px; padding: 16px 18px; }
+  .stage { position: relative; min-height: 100vh; overflow: hidden;
+    display: flex; justify-content: center; align-items: flex-start; }
+  .content { width: 100%; max-width: 440px; padding: 24px 18px 40px; }
 
   .brand { text-align: center; margin-bottom: 14px; }
   .brand .name { font-size: 15px; letter-spacing: 6px; font-weight: 500; }
@@ -38,6 +37,9 @@
   label { display: block; font-size: 12px; letter-spacing: .5px; color: #cfcfcf; margin: 0 0 8px; }
   .req { color: #c98a8a; }
   input { width: 100%; background: #0b0b0b; border: 1px solid #333; border-radius: 10px; color: #f4efe7; font-size: 16px; padding: 11px 14px; font-family: inherit; }
+  input[type="date"] { -webkit-appearance: none; appearance: none; min-width: 0; max-width: 100%; }
+  input[type="date"]::-webkit-date-and-time-value { text-align: left; margin: 0; }
+  input[type="date"]::-webkit-calendar-picker-indicator { margin-left: auto; }
   input:focus { outline: none; border-color: #f4efe7; }
   input::placeholder { color: #6a6a6a; }
   .field { margin-bottom: 12px; }
@@ -122,6 +124,9 @@
           <span class="err" id="e-order"></span>
         </div>
         <button id="btn1">Devam Et</button>
+        <div id="orderHelp" style="display:none; margin-top:12px;">
+          <a id="waLink" target="_blank" rel="noopener" href="#" style="display:block; text-align:center; padding:11px; border:1px solid #333; border-radius:10px; color:#f4efe7; text-decoration:none; font-size:13px;">Yardıma mı ihtiyacın var? WhatsApp'tan yaz →</a>
+        </div>
       </div>
 
       <div class="step hide" id="step2">
@@ -174,9 +179,31 @@
 </div>
 
 <script>
-  var APPS_SCRIPT_URL = "BURAYA_APPS_SCRIPT_URL";
+  var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyBLFkRf6AxA_zWrfMEI1fn_sNXTO8D-IMQei6cFsNRBEpKsNSwVH3EovW8xElTG7NhEA/exec";
   function $(id){ return document.getElementById(id); }
   function setErr(id,msg){ var el=$("e-"+id); if(el) el.textContent = msg||""; }
+
+  var WHATSAPP_NO = "90XXXXXXXXXX"; // <-- WhatsApp numaranı buraya yaz (ör. 905551234567)
+  var orderFails = 0;
+
+  // Apps Script GET'i CORS'u aşmak için JSONP ile okunur
+  function jsonp(url, cb){
+    var s=document.createElement("script");
+    var fn="__cb"+Math.random().toString(36).slice(2);
+    var done=false;
+    function cleanup(){ try{ delete window[fn]; }catch(_){ window[fn]=undefined; } if(s.parentNode) s.parentNode.removeChild(s); }
+    window[fn]=function(data){ done=true; cb(data); cleanup(); };
+    s.onerror=function(){ if(!done){ cb(null); cleanup(); } };
+    s.src=url+(url.indexOf("?")>-1?"&":"?")+"callback="+fn;
+    document.body.appendChild(s);
+    setTimeout(function(){ if(!done){ cb(null); cleanup(); } }, 8000);
+  }
+  function showWhatsApp(){
+    if(WHATSAPP_NO.indexOf("X")>-1) return;
+    $("waLink").href="https://wa.me/"+WHATSAPP_NO+"?text="+encodeURIComponent("Merhaba, sipariş numaramla ilgili yardıma ihtiyacım var.");
+    $("orderHelp").style.display="block";
+  }
+  function orderFail(msg){ orderFails++; setErr("order",msg); if(orderFails>=2) showWhatsApp(); }
 
   var lids=$("lids");
   // kapağı kapat, altındaki adımı değiştir, sonra aç
@@ -225,29 +252,22 @@
   }
 
   $("btn1").addEventListener("click", function(){
-    setErr("order","");
+    setErr("order",""); $("orderHelp").style.display="none";
     var order=$("order").value.trim();
     if(!order){ setErr("order","Sipariş numaranı gir."); return; }
-    $("shownOrder").textContent="#"+order;
-
-    // İsmi siparişten getir. Apps Script bağlanınca gerçek isim gelecek.
-    // Beklenen cevap: { found:true, name:"Ahmet" }
     function proceed(name){
+      $("shownOrder").textContent="#"+order;
       $("greetName").textContent = name || "Değerli müşterimiz";
       lidTransition(1,2,2,"SİPARİŞİN ARANIYOR");
     }
-
-    if(APPS_SCRIPT_URL==="BURAYA_APPS_SCRIPT_URL"){
-      proceed("Ahmet");  // TEST: örnek isim
-      return;
-    }
-    fetch(APPS_SCRIPT_URL+"?order="+encodeURIComponent(order))
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if(d && d.found){ proceed(d.name); }
-        else { setErr("order","Bu numarayla bir sipariş bulamadık. Kontrol edip tekrar dene."); }
-      })
-      .catch(function(){ proceed(""); }); // bağlantı hatası olsa da akış durmasın
+    var btn=$("btn1"); btn.disabled=true; btn.textContent="Aranıyor…";
+    jsonp(APPS_SCRIPT_URL+"?order="+encodeURIComponent(order), function(d){
+      btn.disabled=false; btn.textContent="Devam Et";
+      if(!d){ orderFail("Bağlantı kurulamadı, tekrar dene."); return; }
+      if(!d.found){ orderFail("Bu sipariş numarasını bulamadık. Kontrol edip tekrar dene."); return; }
+      if(d.sealed){ setErr("order","Bu sipariş zaten mühürlenmiş 🤍"); showWhatsApp(); return; }
+      proceed(d.name);
+    });
   });
   $("btn2").addEventListener("click", function(){ fade(2,3,3); });
   $("back2").addEventListener("click", function(){ fade(2,1,1); });
@@ -270,7 +290,7 @@
     function done(){ lidTransition(3,4,3,"MÜHÜRLENİYOR"); }
 
     if(APPS_SCRIPT_URL==="BURAYA_APPS_SCRIPT_URL"){ setTimeout(done,400); return; }
-    fetch(APPS_SCRIPT_URL,{ method:"POST", body:JSON.stringify(payload) })
+    fetch(APPS_SCRIPT_URL,{ method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(payload) })
       .then(done).catch(function(){ btn.disabled=false; btn.textContent="Yüzüğümü Mühürle"; setErr("tc","Bir sorun oldu, tekrar dene."); });
   });
 
