@@ -1088,6 +1088,23 @@
         var el = document.getElementById(p[0]);
         if (el && !el._ready) { el._ready = true; el.addEventListener('click', p[1]); }
       });
+
+      // muhur.html'den gelen ?id= ile ID'yi otomatik doldur, ?not=1 ile not penceresini ac
+      if (!window._ssPrefillDone) {
+        window._ssPrefillDone = true;
+        try {
+          var params = new URLSearchParams(location.search);
+          var pid = params.get('id');
+          if (pid) {
+            var a = document.getElementById('ss-certId'); if (a) a.value = pid;
+            var b = document.getElementById('ss-note-certId'); if (b) b.value = pid;
+          }
+          if (params.get('not') === '1' || params.get('note') === '1') {
+            ssNoteOpen();
+            if (pid) ssNoteGoStep(2);
+          }
+        } catch (e) {}
+      }
     }
 
     document.addEventListener('DOMContentLoaded', init);
