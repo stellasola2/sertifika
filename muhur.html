@@ -164,6 +164,11 @@
           <h2>Mühürlendi</h2>
           <p class="thanks" id="thanks"></p>
           <p>Aşkın artık sonsuza dek kayıt altında. Yüzüğün üretime hazırlanıyor; kısa süre içinde seninle iletişime geçeceğiz.</p>
+          <div id="certBox" style="display:none; margin-top:16px;">
+            <div style="font-size:11px; letter-spacing:2px; color:#8a8a8a;">SERTİFİKA ID'N</div>
+            <div id="certIdVal" style="font-size:16px; letter-spacing:1px; margin:4px 0 14px; color:#f4efe7;"></div>
+            <a id="noteLink" target="_blank" rel="noopener" href="#" style="display:block; text-align:center; padding:12px; border:1px solid #333; border-radius:10px; color:#f4efe7; text-decoration:none; font-size:14px;">💌 Sevgiline dijital not bırak</a>
+          </div>
         </div>
       </div>
     </div>
@@ -182,6 +187,7 @@
 
 <script>
   var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgNy4P87Nb0T8eFk58nRwqpxm0qI1-qkUK8NLeXKxxuDS30HyFud5TTo9ztmwhzfSYiQ/exec";
+  var NOTE_URL = "https://sertifika.stellasola.com/";
   function $(id){ return document.getElementById(id); }
   function setErr(id,msg){ var el=$("e-"+id); if(el) el.textContent = msg||""; }
 
@@ -206,6 +212,19 @@
     $("orderHelp").style.display="block";
   }
   function orderFail(msg){ orderFails++; setErr("order",msg); if(orderFails>=2) showWhatsApp(); }
+
+  // Mühürleme sonrası sertifika kodunu getir + not butonunu kur
+  function fetchCert(order, tries){
+    jsonp(APPS_SCRIPT_URL+"?order="+encodeURIComponent(order), function(d){
+      if(d && d.code){
+        $("certIdVal").textContent = d.code;
+        $("noteLink").href = NOTE_URL + "?id=" + encodeURIComponent(d.code) + "&not=1";
+        $("certBox").style.display = "block";
+      } else if(tries > 0){
+        setTimeout(function(){ fetchCert(order, tries-1); }, 1500);
+      }
+    });
+  }
 
   var lids=$("lids");
   // kapağı kapat, altındaki adımı değiştir, sonra aç
@@ -292,6 +311,7 @@
       var ad = (buyer.split(/\s+/)[0] || buyer);
       $("thanks").textContent = ad + ", teşekkürler 🤍";
       lidTransition(3,4,3,"MÜHÜRLENİYOR");
+      fetchCert(order, 6);
     }
 
     if(APPS_SCRIPT_URL==="BURAYA_APPS_SCRIPT_URL"){ setTimeout(done,400); return; }
