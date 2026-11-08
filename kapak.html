@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aşk Sözleşmesi · Stella Sola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#FAF9F6;color:#0B0B0C;font-family:'EB Garamond',Georgia,serif;-webkit-font-smoothing:antialiased}
+  .wrap{padding:64px 18px 70px;text-align:center}
+  .tag{font-size:12px;letter-spacing:.45em;color:#8a8a8a;text-transform:uppercase}
+  .bar{width:46px;height:1px;background:#A32D2D;margin:18px auto 24px}
+  h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;font-size:clamp(32px,5vw,50px);line-height:1.1}
+  h2 i{font-style:italic}
+  .sub{font-size:18px;color:#555;margin:14px auto 0;max-width:460px;line-height:1.55}
+
+  /* ---- Kutu ---- */
+  .box{position:relative;width:100%;max-width:560px;aspect-ratio:16/11;margin:40px auto 0;
+    perspective:2200px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .inside{position:absolute;inset:0;background:#0B0B0C;border-radius:4px;padding:22px;
+    box-shadow:inset 0 0 40px rgba(0,0,0,.6)}
+  .paper{position:relative;height:100%;background:#FDFBF7;border:1px solid #C9CBCE;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;
+    opacity:0;transform:translateY(14px) scale(.97);transition:opacity .7s ease .55s,transform .7s ease .55s}
+  .paper::before{content:"";position:absolute;inset:8px;border:1px solid #e6e2d8;pointer-events:none}
+  .box.open .paper{opacity:1;transform:none}
+  .p-eyebrow{font-size:11px;letter-spacing:.4em;color:#8a8a8a;text-transform:uppercase}
+  .p-title{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:500;
+    font-size:clamp(30px,6vw,44px);margin:6px 0 4px}
+  .p-line{font-size:15px;color:#555}
+  .p-code{margin-top:10px;font-size:13px;letter-spacing:.25em;color:#A32D2D}
+  .btn{display:inline-block;margin-top:clamp(12px,3vw,20px);padding:13px 28px;background:#0B0B0C;color:#FDFBF7;
+    text-decoration:none;font-size:13px;letter-spacing:.25em;text-transform:uppercase;
+    transition:background .25s,transform .25s}
+  .btn:hover{background:#A32D2D;transform:translateY(-1px)}
+
+  .door{position:absolute;top:0;bottom:0;width:50%;overflow:hidden;background:#fff;
+    transition:transform 1.1s cubic-bezier(.65,0,.35,1);backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;box-shadow:0 10px 40px rgba(0,0,0,.18)}
+  .door.l{left:0;transform-origin:left center;border-right:1px solid #e4e4e4;border-radius:4px 0 0 4px}
+  .door.r{right:0;transform-origin:right center;border-left:1px solid #e4e4e4;border-radius:0 4px 4px 0}
+  .box.open .door.l{transform:rotateY(-112deg)}
+  .box.open .door.r{transform:rotateY(112deg)}
+  .door .full{position:absolute;top:0;bottom:0;width:200%;display:flex;flex-direction:column;
+    align-items:center;justify-content:center}
+  .door.l .full{left:0}
+  .door.r .full{right:0}
+  .door img{width:46%;height:auto;display:block}
+  .cap{position:absolute;bottom:9%;font-size:11px;letter-spacing:.35em;color:#0B0B0C;font-weight:500}
+  .door.l .cap{right:10%}
+  .door.r .cap{left:10%}
+
+  .hint{margin-top:22px;font-size:12px;letter-spacing:.35em;color:#8a8a8a;text-transform:uppercase;
+    animation:pulse 2s ease-in-out infinite;transition:opacity .4s}
+  .box.open + .hint{opacity:0;animation:none}
+  @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+
+  @media(max-width:520px){
+    .wrap{padding:48px 16px 54px}
+    .inside{padding:14px}
+    .p-line{font-size:14px}
+    .btn{padding:11px 20px;font-size:12px}
+    .cap{font-size:9px;letter-spacing:.28em}
+  }
+</style>
+</head>
+<body>
+  <section class="wrap">
+    <div class="tag">Aşk Sözleşmesi</div>
+    <div class="bar"></div>
+    <h2>Her yüzüğün <i>bir sözü</i> var</h2>
+    <p class="sub">Yüzüğünle gelen Aşk Sözleşmesi'ni buradan doğrula, sevgiline mektup bırak.</p>
+
+    <div class="box" id="box" role="button" tabindex="0" aria-label="Kutuyu aç">
+      <div class="inside">
+        <div class="paper">
+          <div class="p-eyebrow">Stella Sola</div>
+          <div class="p-title">Aşk Sözleşmesi</div>
+          <div class="p-line">Bir ömür, tek söz.</div>
+          <div class="p-code">SS-••••••</div>
+          <a class="btn" href="https://sertifika.stellasola.com/" target="_blank" rel="noopener">Sözleşmeni Doğrula</a>
+        </div>
+      </div>
+      <div class="door l"><div class="full"><img src="stella-sola-logo.png" alt="Stella Sola"></div><div class="cap">BİR ÖMÜR</div></div>
+      <div class="door r"><div class="full"><img src="stella-sola-logo.png" alt=""></div><div class="cap">TEK SÖZ</div></div>
+    </div>
+    <div class="hint">Açmak için dokun</div>
+  </section>
+
+<script>
+(function(){
+  var box=document.getElementById('box'), opened=false;
+  function open(){ if(opened) return; opened=true; box.classList.add('open'); box.setAttribute('aria-label','Kutu açık'); }
+  box.addEventListener('click',function(e){ if(!opened){ e.preventDefault(); open(); } });
+  box.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(); } });
+  // Dokunulmazsa: bölüm ekranda göründükten 2.5 sn sonra kendiliğinden açılır
+  if('IntersectionObserver' in window){
+    var t=null, io=new IntersectionObserver(function(en){
+      en.forEach(function(e){
+        if(e.isIntersecting){ t=setTimeout(open,2500); } else if(t){ clearTimeout(t); t=null; }
+      });
+    },{threshold:.6});
+    io.observe(box);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tek Kişiye Tek Yüzük · Stella Sola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:transparent;color:#0B0B0C;font-family:'EB Garamond',Georgia,serif;-webkit-font-smoothing:antialiased}
+  .card{position:relative;max-width:520px;margin:6px auto;background:#FDFBF7;border:1px solid #C9CBCE;
+    padding:24px 22px 22px;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent;overflow:hidden}
+  .card::before{content:"";position:absolute;inset:6px;border:1px solid #ece8de;pointer-events:none}
+  .eyebrow{font-size:11px;letter-spacing:.4em;color:#8a8a8a;text-transform:uppercase}
+
+  .zone{position:relative;height:96px;margin:10px auto 6px;width:96px}
+  .slot{position:absolute;left:50%;bottom:6px;width:76px;height:76px;margin-left:-38px;border-radius:50%;
+    border:1.5px dashed #C9CBCE;transition:opacity .3s}
+  .seal{position:absolute;left:50%;bottom:6px;width:76px;height:76px;margin-left:-38px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#c0474a 0%,#A32D2D 55%,#7d1f1f 100%);
+    box-shadow:0 3px 10px rgba(122,31,31,.35),inset 0 0 0 4px rgba(255,255,255,.08);
+    display:flex;align-items:center;justify-content:center;opacity:0}
+  .seal::after{content:"";position:absolute;inset:7px;border-radius:50%;border:1px solid rgba(253,251,247,.55)}
+  .seal span{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:600;font-size:27px;color:#FDFBF7;letter-spacing:.02em}
+  .ring{position:absolute;left:50%;bottom:6px;width:76px;height:76px;margin-left:-38px;border-radius:50%;
+    border:2px solid #A32D2D;opacity:0}
+  .card.done .slot{opacity:0}
+  .card.done .seal{animation:drop .72s cubic-bezier(.34,.62,.3,1) forwards}
+  .card.done .ring{animation:wave .7s ease .44s forwards}
+  .card:not(.done) .slot{animation:breathe 2s ease-in-out infinite}
+  @keyframes drop{
+    0%{opacity:0;transform:translateY(-110px) scale(1.7) rotate(-8deg)}
+    45%{opacity:1}
+    64%{opacity:1;transform:translateY(0) scale(.84) rotate(0)}
+    80%{transform:translateY(-6px) scale(1.06)}
+    100%{opacity:1;transform:translateY(0) scale(1)}
+  }
+  @keyframes wave{0%{opacity:0;transform:scale(.55)}12%{opacity:.5}100%{opacity:0;transform:scale(3)}}
+  @keyframes breathe{0%,100%{border-color:#C9CBCE;transform:scale(1)}50%{border-color:#A32D2D;transform:scale(1.05)}}
+  .card.shake{animation:shake .32s ease .48s}
+  @keyframes shake{0%,100%{transform:translateY(0)}35%{transform:translateY(2px)}70%{transform:translateY(-1px)}}
+
+  h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:clamp(26px,6vw,32px);line-height:1.15}
+  h3 i{font-style:italic}
+  .swap{display:grid;margin-top:10px;min-height:84px;align-items:center}
+  .swap > *{grid-area:1/1;transition:opacity .45s ease,transform .45s ease}
+  .before{font-size:12px;letter-spacing:.35em;color:#8a8a8a;text-transform:uppercase}
+  .after{opacity:0;transform:translateY(8px)}
+  .after p{font-size:16.5px;line-height:1.55;color:#3a3a3a}
+  .after .vow{margin-top:8px;font-size:12px;letter-spacing:.3em;color:#A32D2D;text-transform:uppercase}
+  .card.done .before{opacity:0}
+  .card.done .after{opacity:1;transform:none;transition-delay:.55s}
+</style>
+</head>
+<body>
+  <div class="card" id="card" role="button" tabindex="0" aria-label="Mühürle">
+    <div class="eyebrow">Tek kişiye tek yüzük</div>
+    <div class="zone">
+      <span class="slot"></span>
+      <span class="ring"></span>
+      <div class="seal"><span>SS</span></div>
+    </div>
+    <h3>Hayatında yalnızca <i>bir kez.</i></h3>
+    <div class="swap">
+      <div class="before">Mühürlemek için dokun</div>
+      <div class="after">
+        <p>Bu yüzük, satın aldıktan sonra kimliğinle mühürlenir. Aynı kimlikle ikinci bir yüzük alınamaz.</p>
+        <div class="vow">Bir ömür · Tek söz</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  var c=document.getElementById('card'), done=false;
+  function seal(){ if(done) return; done=true; c.classList.add('done','shake'); c.setAttribute('aria-label','Mühürlendi'); }
+  c.addEventListener('click',seal);
+  c.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); seal(); } });
+  // Dokunulmazsa: kart ekranda göründükten 3 sn sonra kendiliğinden mühürlenir
+  if('IntersectionObserver' in window){
+    var t=null, io=new IntersectionObserver(function(en){
+      en.forEach(function(e){ if(e.isIntersecting){ t=setTimeout(seal,3000); } else if(t){ clearTimeout(t); t=null; } });
+    },{threshold:.7});
+    io.observe(c);
+  }
+})();
+</script>
+</body>
+</html>
